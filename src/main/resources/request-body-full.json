@@ -1,0 +1,71 @@
+{
+	"domain": "regression",
+	"methods": [
+		{
+			"algorithm": "svm",
+			"hyperparameters": [
+				{
+					"param": "convergence",
+					"values": [
+						"fast",
+						"slow"
+					]
+				}
+			]
+		},
+		{
+			"algorithm": "neural-network",
+			"hyperparameters": [
+				{
+					"param": "numLayers",
+					"values": [
+						3,
+						4,
+						5,
+						6
+					]
+				},
+				{
+					"param": "inputLayerWidth",
+					"values": [
+						8
+					]
+				},
+				{
+					"param": "hiddenLayersWidth",
+					"values": [
+						32
+					]
+				},
+				{
+					"param": "outputLayerWidth",
+					"values": [
+						4, 6, 8
+					]
+				}
+			]
+		},
+		{
+			"algorithm": "decision-tree"
+		}
+	],
+	"computationalResources": {
+		"instances": [
+			{
+				"ec2Instance": "t2.micro",
+				"maxInstances": 4
+			},
+			{
+				"ec2Instance": "m5.2xlarge",
+				"additionalHardware": [
+					"GPU"
+				],
+				"minInstances": 1,
+				"maxInstances": 2
+			}
+		],
+		"minTotalInstances": 1,
+		"maxTotalInstances": 6
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}

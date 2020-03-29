@@ -1,0 +1,118 @@
+{
+    "id": "https://github.com/systematic-chaos/mbda-tfm",
+    "$schema": "https://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "domain": {
+            "type": "string",
+            "enum": [
+                "classification",
+                "regression",
+                "clustering",
+                "deep-learning"
+            ]
+        },
+        "methods": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "algorithm": {
+                        "type": "string",
+                        "enum": [
+                            "decision-tree",
+                            "svm",
+                            "k-means",
+                            "neural-network"
+                        ]
+                    },
+                    "hyperparameters": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "param": {
+                                    "type": "string"
+                                },
+                                "values": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": [
+                                            "number",
+                                            "string"
+                                        ]
+                                    }
+                                }
+                            },
+                            "required": [
+                                "param",
+                                "values"
+                            ]
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "algorithm"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "computationalResources": {
+            "type": "object",
+            "properties": {
+                "instances": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "ec2Instance": {
+                                "type": "string",
+                                "pattern":"^[A-Za-z][0-9][a-z]?.(([1-9]{1,2}x)|x)?(nano|micro|small|medium|large|metal)$"
+                            },
+                            "additionalHardware": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "enum": [
+                                        "GPU"
+                                    ]
+                                },
+                                "uniqueItems": true
+                            },
+                            "minInstances": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 32
+                            },
+                            "maxInstances": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 32
+                            }
+                        }
+                    }
+                },
+                "minTotalInstances": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 32
+                },
+                "maxTotalInstances": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 64
+                }
+            }
+        },
+        "emailAddress": {
+            "type": "string",
+            "format": "email"
+        }
+    },
+    "required": [
+        "domain",
+        "methods",
+        "emailAddress"
+    ]
+}
