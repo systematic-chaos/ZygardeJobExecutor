@@ -24,8 +24,9 @@ import es.upv.mbda.tfm.zygarde.schema.ZygardeRequest;
  */
 public class FileSystemResourcesEntryPoint {
 	
-	private static final String JSON_SCHEMA = "json-schema.json";
-	private static final String[] JSON_REQUESTS = { "request-body.json", "request-body-full.json" };
+	private static final String JSON_SCHEMA = "request/json-schema.json";
+	//private static final String[] JSON_REQUESTS = { "request/request-body.json", "request/request-body-full.json" };
+	private static final String[] JSON_REQUESTS = { "request/request-smac.json" };
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemResourcesEntryPoint.class);
 	
