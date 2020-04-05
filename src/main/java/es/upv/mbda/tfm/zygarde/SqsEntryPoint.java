@@ -32,7 +32,7 @@ public class SqsEntryPoint {
 		LOGGER.info("Queue: " + QUEUE_NAME);
 		LOGGER.info("Queue URL: " + queueUrl);
 		
-		InputStream schemaStream = SqsMessageManager.class.getClassLoader().getResourceAsStream("json-schema.json");
+		InputStream schemaStream = SqsMessageManager.class.getClassLoader().getResourceAsStream("request/json-schema.json");
 		RequestParser requestParser = new RequestParser(schemaStream);
 		
 		while (true) {

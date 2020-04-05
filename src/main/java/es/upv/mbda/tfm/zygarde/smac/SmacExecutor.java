@@ -87,11 +87,6 @@ public class SmacExecutor {
 		return result;
 	}
 	
-	public List<AlgorithmRunResult> runFakeSmac(String[] args) {
-		List<AlgorithmRunResult> result = new ArrayList<>();
-		return result;
-	}
-	
 	public int runSmac(String[] args, List<AlgorithmRunResult> result) {
 		try {
 			SMACOptions options = parseCliOptions(args);
@@ -120,8 +115,7 @@ public class SmacExecutor {
 			performance.put(tfes.get(tfes.size() - 1),
 					new ValidationResult(Double.POSITIVE_INFINITY, Collections.<ProblemInstanceSeedPair>emptyList()));
 			
-			// TODO CHECK THIS AND WHETHER IT INCLUDES INCUMBENT 
-			result.addAll(smac.runHistory().getAlgorithmRunsExcludingRedundant(smac.getIncumbent()));
+			result.addAll(smac.runHistory().getAlgorithmRunsExcludingRedundant(/*smac.getIncumbent()*/));
 			
 			smacBuilder.getEventManager().shutdown();
 			
@@ -138,7 +132,7 @@ public class SmacExecutor {
 			LOGGER.error(new StringBuilder().append("We tried to call the target algorithm wrapper, but this call failed.\n")
 				.append("The problem is (most likely) somewhere in the wrapper or with the arguments to SMAC.\n")
 				.append("The easiest way to debug this problem is to manually execute the call we tried and see why it did not return the correct result.\n")
-				.append("The required output of the wapper is something like \"Result for ParamILS: x,x,x,x,x\".);\n").toString());
+				.append("The required output of the wrapper is something like \"Result for ParamILS: x,x,x,x,x\".);\n").toString());
 			return AEATKReturnValues.OTHER_EXCEPTION;
 		} catch (StateSerializationException sse) {
 			LOGGER.error("Error occurred while running SMAC\n>Error Message: " + sse.getMessage());
