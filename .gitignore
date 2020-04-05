@@ -4,3 +4,6 @@ target
 .project
 .settings
 smac-output/
+*.log
+*.pcs
+__pycache__

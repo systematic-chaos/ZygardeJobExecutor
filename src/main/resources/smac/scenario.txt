@@ -1,3 +1,3 @@
 use-instances = false
 runObj = QUALITY
-algo = smac/branin/branin.py
+algo = smac/smacWrapper.py --runsolver-path None

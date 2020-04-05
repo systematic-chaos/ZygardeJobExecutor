@@ -16,7 +16,8 @@ from .genericSmacWrapper import AbstractGenericSmacWrapper
 
 class ZygardeSmacWrapper(AbstractGenericSmacWrapper):
 
-    algorithm_modules = { 'branin': "branin/branin.py" }
+    algorithm_modules = { 'branin': "branin/branin.py",
+                            '0': "branin/branin.py" }
 
     def get_command_line_args(self, runargs, config):
         '''
@@ -34,11 +35,16 @@ class ZygardeSmacWrapper(AbstractGenericSmacWrapper):
         Returns:
             A command call list to execute the target algorithm.
         '''
-        self.algorithm = runargs['specifics']
+        algorithm_key = '-' + 'algorithm'
+        if algorithm_key in config:
+            self.algorithm = config[algorithm_key]
+            del config[algorithm_key]
+        else: self.algorithm = str(0)
+        self.algorithm = ZygardeSmacWrapper.algorithm_modules[self.algorithm]
 
         root_path = path.normpath(path.join(path.dirname(path.abspath(__file__)), '..'))
-        cmd = "python %s " % path.join(root_path, ZygardeSmacWrapper.algorithm_modules[self.algorithm])
-        #cmd += " --runsolver-path %s " % path.join(root_path, 'runsolver', 'runsolver')
+        cmd = "python %s " % path.join(root_path, self.algorithm)
+        #cmd += " --runsolver-path %s " % path.join(root_path, 'scripts', 'runsolver')
 
         # Add the run arguments to cmd
         for key in ['instance', 'specifics', 'cutoff', 'runlength', 'seed']:
@@ -48,7 +54,6 @@ class ZygardeSmacWrapper(AbstractGenericSmacWrapper):
         for name, value in config.items():
             cmd += " -%s %s " % (name[1:], value)
         
-        print(cmd)
         return cmd
     
     def process_results(self, filepointer, out_args):
@@ -79,7 +84,7 @@ class ZygardeSmacWrapper(AbstractGenericSmacWrapper):
             data = parse("Result for SMAC: {}, {}, {}, {}, {}", output_data)
             resultMap['status'] = data[0]
             resultMap['runtime'] = 0
-            resultMap['quality'] = -float(data[3])
+            resultMap['quality'] = float(data[3])
         else:
             resultMap['status'] = 'CRASHED'
             resultMap['runtime'] = 2147483647

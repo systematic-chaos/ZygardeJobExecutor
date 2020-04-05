@@ -23,7 +23,8 @@
                             "decision-tree",
                             "svm",
                             "k-means",
-                            "neural-network"
+                            "neural-network",
+                            "branin"
                         ]
                     },
                     "hyperparameters": {

@@ -12,7 +12,8 @@ public enum Algorithm {
 	DECISION_TREE("decision-tree"),
 	SVM("svm"),
 	K_MEANS("k-means"),
-	NEURAL_NETWORK("neural-network");
+	NEURAL_NETWORK("neural-network"),
+	BRANIN("branin");
 	
 	public final String name;
 	private static Map<String, Algorithm> nameValues;

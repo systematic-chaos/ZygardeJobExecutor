@@ -65,7 +65,7 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		
 		Map<String, String> argsMap = new HashMap<>();
 		argsMap.put("scenario-file", getScenarioPath().toString());
-		argsMap.put("pcs-file", writeParamsFile(seed).toString());
+		argsMap.put("pcs-file", writeParamsFile(seed, true).toString());
 		argsMap.put("numberOfRunsLimit", String.valueOf(getNumberOfRunsLimit()));
 		argsMap.put("rungroup", String.format("%s-%d", method.getAlgorithm(), seed));
 		argsMap.put("seed", String.valueOf(seed));
@@ -93,14 +93,23 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		return scenarioPath;
 	}
 	
-	private Path writeParamsFile(int seed) throws IOException {
+	private Path writeParamsFile(int seed, boolean setupAlgorithm) throws IOException {
 		Path paramsPath = Paths.get(System.getProperty("user.dir"), "smac", "params",
 				String.format("params-%d.pcs", seed));
+		List<Hyperparameter<?>> hyperparameters = method.getHyperparameters();
+		
+		// Add the algorithm itself as a single-valued categorical parameter
+		if (setupAlgorithm) {
+			hyperparameters = new ArrayList<>(hyperparameters.size() + 1);
+			hyperparameters.add(getAlgorithmAsHyperparameter(this.method.getAlgorithm()));
+			hyperparameters.addAll(method.getHyperparameters());
+		}
 		
 		final String CATEGORICAL_PARAM = " categorical ";
-		List<String> paramLines = new ArrayList<>(method.getHyperparameters().size());
+		List<String> paramLines = new ArrayList<>(hyperparameters.size());
 		StringBuilder line;
-		for (Hyperparameter<?> hp : method.getHyperparameters()) {
+		
+		for (Hyperparameter<?> hp : hyperparameters) {
 			line = new StringBuilder(hp.getParam()).append(CATEGORICAL_PARAM).append('{');
 			for (Object pv : hp.getValues()) {
 				line.append(String.format(" %s ,", pv.toString()));
@@ -112,6 +121,16 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		
 		Files.write(paramsPath, paramLines, StandardCharsets.UTF_8);
 		return paramsPath;
+	}
+	
+	private Hyperparameter<String> getAlgorithmAsHyperparameter(String algorithm) {
+		Hyperparameter<String> hp = new Hyperparameter<>();
+		List<String> hpValues = new ArrayList<>();
+		hpValues.add(algorithm);
+		
+		hp.setParam("algorithm");
+		hp.setValues(hpValues);
+		return hp;
 	}
 	
 	private int getNumberOfRunsLimit() {
