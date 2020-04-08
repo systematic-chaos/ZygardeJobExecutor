@@ -1,5 +1,5 @@
 '''
-zygardeSmacWrapper -- SMAC wrapper based in genericWrapper.py
+genericSmacWrapper -- template for an AClib target algorithm wrapper
 
 @author:    Thánatos Dreamslayer
 @copyright: 2020 Ka-tet Corporation. All rights reserved.
@@ -12,12 +12,11 @@ import os.path as path
 from re import match
 from parse import parse
 
-from .genericSmacWrapper import AbstractGenericSmacWrapper
+from .abstract_smac_wrapper import AbstractWrapper
 
-class ZygardeSmacWrapper(AbstractGenericSmacWrapper):
+class GenericSmacWrapper(AbstractWrapper):
 
-    algorithm_modules = { 'branin': "branin/branin.py",
-                            '0': "branin/branin.py" }
+    algorithm_wrapper_module = "algorithm_smac_wrapper.py"
 
     def get_command_line_args(self, runargs, config):
         '''
@@ -35,15 +34,8 @@ class ZygardeSmacWrapper(AbstractGenericSmacWrapper):
         Returns:
             A command call list to execute the target algorithm.
         '''
-        algorithm_key = '-' + 'algorithm'
-        if algorithm_key in config:
-            self.algorithm = config[algorithm_key]
-            del config[algorithm_key]
-        else: self.algorithm = str(0)
-        self.algorithm = ZygardeSmacWrapper.algorithm_modules[self.algorithm]
-
         root_path = path.normpath(path.join(path.dirname(path.abspath(__file__)), '..'))
-        cmd = "python %s " % path.join(root_path, self.algorithm)
+        cmd = "python %s " % path.join(root_path, GenericSmacWrapper.algorithm_wrapper_module)
         #cmd += " --runsolver-path %s " % path.join(root_path, 'scripts', 'runsolver')
 
         # Add the run arguments to cmd
@@ -76,7 +68,7 @@ class ZygardeSmacWrapper(AbstractGenericSmacWrapper):
         '''
         # Parse the output of the solver which can be found in the filepointer <filepointer>
         output_data = filepointer.read().decode('utf-8')
-        resultMap = { 'misc': self.algorithm }
+        resultMap = {}
         
         success_status = ['SUCCESS', 'SATISFIABLE']
         if out_args['exit_code'] == 0 and \
@@ -89,3 +81,12 @@ class ZygardeSmacWrapper(AbstractGenericSmacWrapper):
             resultMap['status'] = 'CRASHED'
             resultMap['runtime'] = 2147483647
         return resultMap
+    
+    def verify_SAT(self, model, solver_output):
+        satisfied = True
+        with open(self._instance) as fp:
+            for line in fp:
+                if not(line.startswith('c') or line.startswith('p')):
+                    clause = map(int, line.split(' ')[:-1])
+                    satisfied &= any(lit in model for lit in clause)
+        return satisfied

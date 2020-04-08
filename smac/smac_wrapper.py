@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 '''
-smacWrapper -- SMAC Python wrapper
+smac_wrapper -- SMAC Python wrapper
 
 @author:    Thánatos Dreamslayer
 @copyright: 2020 Ka-tet Corporation. All rights reserved.
@@ -10,8 +10,7 @@ smacWrapper -- SMAC Python wrapper
 @contact:   fraferp9@posgrado.upv.es
 '''
 
-from smacwrapper.zygardeSmacWrapper import ZygardeSmacWrapper
+from wrapper.generic_smac_wrapper import GenericSmacWrapper
 
-if __name__ == '__main__':
-    wrapper = ZygardeSmacWrapper()
-    wrapper.main()
+wrapper = GenericSmacWrapper()
+wrapper.main()

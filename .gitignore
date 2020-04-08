@@ -7,3 +7,4 @@ smac-output/
 *.log
 *.pcs
 __pycache__
+*.pyc
