@@ -1,3 +1,12 @@
+'''
+algorithm_wrapper -- Wrapper for invoking functions from the command-line
+
+@author:    Thánatos Dreamslayer
+@copyright: 2020 Ka-tet Corporation. All rights reserved.
+@license:   GPLv3.0
+@contact:   fraferp9@posgrado.upv.es
+'''
+
 from .functions.branin import branin_func as branin
 
 algorithm_modules = { 'branin': branin }
@@ -9,12 +18,7 @@ def get_command_line_args(runargs):
     i = runargs.index('-' + 'algorithm') + 2
     algorithm = runargs[i-1]
     while i < len(runargs):
-        a = runargs[i+1]
-        if is_int(a):
-            a = int(a)
-        elif is_float(a):
-            a = float(a)
-        args[runargs[i][1:]] = a
+        args[runargs[i][1:]] = cast_argument(runargs[i+1])
         i += 2
     return algorithm, args
 
@@ -31,3 +35,11 @@ def is_float(value):
         return True
     except ValueError:
         return False
+
+def cast_argument(value):
+    if is_int(value):
+        return int(value)
+    elif is_float(value):
+        return float(value)
+    else:
+        return str(value)

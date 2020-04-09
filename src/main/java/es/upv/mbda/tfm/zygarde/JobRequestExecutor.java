@@ -45,12 +45,12 @@ public class JobRequestExecutor implements Runnable {
 		
 		SortedSet<ModelResult> globalResults = new TreeSet<>(Comparator.reverseOrder());
 		
-		List<MethodExecutor> tasks = request.getMethods().stream()
-				.map(method -> new BayesianOptimizationMethodExecutor(method, lifecycle))
-				.collect(Collectors.toList());
 		/*List<MethodExecutor> tasks = request.getMethods().stream()
-				.map(method -> new GridSearchMethodExecutor(method, lifecycle))
+				.map(method -> new BayesianOptimizationMethodExecutor(method, lifecycle))
 				.collect(Collectors.toList());*/
+		List<MethodExecutor> tasks = request.getMethods().stream()
+				.map(method -> new GridSearchMethodExecutor(method, lifecycle))
+				.collect(Collectors.toList());
 		/*List<MethodExecutor> tasks = request.getMethods().stream()
 				.map(method -> new RandomSearchMethodExecutor(method, lifecycle,
 						request.getComputationalResources().getMaxTotalInstances()))

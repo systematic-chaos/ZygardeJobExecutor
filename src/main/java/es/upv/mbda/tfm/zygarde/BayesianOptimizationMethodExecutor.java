@@ -155,7 +155,7 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		for (String key : smacParams.keySet()) {
 			hyperparameters.put(key, smacParams.get(key));
 		}
-		return new ModelResult(-Math.abs(runResult.getQuality()),
+		return new ModelResult(Math.abs(-runResult.getQuality()),
 				algorithm, hyperparameters);
 	}
 	

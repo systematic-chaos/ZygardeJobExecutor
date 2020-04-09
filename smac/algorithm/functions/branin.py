@@ -1,3 +1,12 @@
+'''
+branin -- Branin function computation
+
+@author:    Thánatos Dreamslayer
+@copyright: 2020 Ka-tet Corporation. All rights reserved.
+@license:   GPLv3.0
+@contact:   fraferp9@posgrado.upv.es
+'''
+
 import math
 
 def branin(x1, x2,
@@ -17,4 +26,6 @@ def branin_func(args):
             yValue = branin(x1, x2, args['a'], args['b'], args['c'], args['r'], args['s'], args['t'])
         else:
             yValue = branin(x1, x2)
-        return yValue
+        return -yValue
+    else:
+        raise ValueError('x1 and x2 input variable arguments were no provided')

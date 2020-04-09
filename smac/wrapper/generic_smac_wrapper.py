@@ -35,7 +35,7 @@ class GenericSmacWrapper(AbstractWrapper):
             A command call list to execute the target algorithm.
         '''
         root_path = path.normpath(path.join(path.dirname(path.abspath(__file__)), '..'))
-        cmd = "python %s " % path.join(root_path, GenericSmacWrapper.algorithm_wrapper_module)
+        cmd = path.join(root_path, GenericSmacWrapper.algorithm_wrapper_module)
         #cmd += " --runsolver-path %s " % path.join(root_path, 'scripts', 'runsolver')
 
         # Add the run arguments to cmd

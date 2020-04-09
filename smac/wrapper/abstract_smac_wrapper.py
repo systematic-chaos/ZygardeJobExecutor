@@ -1,6 +1,7 @@
 '''
 abstract_smac_wrapper -- template for an AClib target algorithm wrapper
 abstract methods for generation of callstring and parsing of solver output 
+
 @author:     Marius Lindauer, Chris Fawcett, Alex Fréchette, Frank Hutter  
 @copyright:  2014 AClib. All rights reserved.
 @license:    GPL
