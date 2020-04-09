@@ -51,7 +51,17 @@ public class ModelResult implements Comparable<ModelResult> {
 	
 	@Override
 	public int compareTo(ModelResult other) {
-		return other != null ?
-				Double.compare(this.getPrecision(), other.getPrecision()) : 1;
+		if (other != null) {
+			int eq = Double.compare(this.getPrecision(), other.getPrecision());
+			return eq != 0 ? eq : 1;
+		} else {
+			return 1;
+		}
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return obj != null && obj instanceof ModelResult
+				&& Double.compare(this.getPrecision(), ((ModelResult) obj).getPrecision()) == 0;
 	}
 }
