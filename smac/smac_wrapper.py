@@ -4,10 +4,14 @@
 '''
 smac_wrapper -- SMAC Python wrapper
 
-@author:    Thánatos Dreamslayer
+Zygarde: Platform for reactive training of models in the cloud
+Master in Big Data Analytics
+Polytechnic University of Valencia
+
+@author:    Javier Fernández-Bravo Peñuela
 @copyright: 2020 Ka-tet Corporation. All rights reserved.
 @license:   GPLv3.0
-@contact:   fraferp9@posgrado.upv.es
+@contact:   fjfernandezbravo@iti.es
 '''
 
 from wrapper.generic_smac_wrapper import GenericSmacWrapper

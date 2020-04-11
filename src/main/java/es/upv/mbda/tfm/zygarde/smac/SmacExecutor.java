@@ -53,6 +53,18 @@ import ca.ubc.cs.beta.smac.configurator.AbstractAlgorithmFramework;
 import ca.ubc.cs.beta.smac.misc.version.SMACVersionInfo;
 import ca.ubc.cs.beta.smac.validation.ValidationResult;
 
+/**
+ * Zygarde: Platform for reactive training of models in the cloud
+ * Master in Big Data Analytics
+ * Polytechnic University of Valencia
+ * 
+ * @author		Javier Fernández-Bravo Peñuela
+ * @copyright	2020 Ka-tet Corporation. All rights reserved.
+ * @license		GPLv3.0
+ * @contact		fjfernandezbravo@iti.es
+ * 
+ * @class es.upv.mbda.tfm.zygarde.smac.SmacExecutor
+ */
 public class SmacExecutor {
 	
 	private Map<String, AbstractOptions> taeOptions;
@@ -61,7 +73,6 @@ public class SmacExecutor {
 	private String logLocation;
 	private SeedableRandomPool pool;
 	private InstanceListWithSeeds trainingILWS;
-	private InstanceListWithSeeds testingILWS;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SmacExecutor.class);
 	private static final Marker EXCEPTION = MarkerFactory.getMarker("EXCEPTION");
@@ -200,7 +211,6 @@ public class SmacExecutor {
 			
 			TrainTestInstances tti = options.getTrainingAndTestProblemInstances(this.pool, new SeedableRandomPool(options.validationSeed + options.seedOptions.seedOffset, pool.getInitialSeeds()));
 			this.trainingILWS = tti.getTrainingInstances();
-			this.testingILWS = tti.getTestInstances();
 			
 			logJvmCpuTimeMeasurements(options);
 		} catch (IOException | ParameterException e) {

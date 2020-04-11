@@ -28,7 +28,15 @@ import es.upv.mbda.tfm.zygarde.schema.Method;
 import es.upv.mbda.tfm.zygarde.smac.SmacExecutor;
 
 /**
- * @author thanatos
+ * Zygarde: Platform for reactive training of models in the cloud
+ * Master in Big Data Analytics
+ * Polytechnic University of Valencia
+ * 
+ * @author		Javier Fernández-Bravo Peñuela
+ * @copyright	2020 Ka-tet Corporation. All rights reserved.
+ * @license		GPLv3.0
+ * @contact		fjfernandezbravo@iti.es
+ * 
  * @class es.upv.mbda.tfm.zygarde.BayesianOptimizationMethodExecutor
  */
 public class BayesianOptimizationMethodExecutor extends MethodExecutor {

@@ -16,7 +16,15 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
 /**
- * @author thanatos
+ * Zygarde: Platform for reactive training of models in the cloud
+ * Master in Big Data Analytics
+ * Polytechnic University of Valecia
+ * 
+ * @author		Javier Fernández-Bravo Peñuela
+ * @copyright	2020 Ka-tet Corporation. All rights reserved.
+ * @license		GPLv3.0
+ * @contact		fjfernandezbravo@iti.es
+ * 
  * @class es.upv.mbda.tfm.zygarde.SqsMessageManager
  */
 public class SqsMessageManager {

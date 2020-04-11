@@ -5,7 +5,15 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * @author thanatos
+ * Zygarde: Platform for reactive training of models in the cloud
+ * Master in Big Data Analytics
+ * Polytechnic University of Valencia
+ * 
+ * @author		Javier Fernández-Bravo Peñuela
+ * @copyright	2020 Ka-tet Corporation. All rights reserved.
+ * @license		GPLv3.0
+ * @contact		fjfernandezbravo@iti.es
+ * 
  * @class es.upv.bmda.tfm.zygarde.schema.ZygardeRequest
  */
 public class ZygardeRequest {

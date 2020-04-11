@@ -2,13 +2,10 @@
 abstract_smac_wrapper -- template for an AClib target algorithm wrapper
 abstract methods for generation of callstring and parsing of solver output 
 
-@author:     Marius Lindauer, Chris Fawcett, Alex Fréchette, Frank Hutter  
-@copyright:  2014 AClib. All rights reserved.
-@license:    GPL
-@contact:    lindauer@informatik.uni-freiburg.de, fawcettc@cs.ubc.ca, afrechet@cs.ubc.ca, fh@informatik.uni-freiburg.de
-
-@note: example call: python src/generic_wrapper/spearWrapper.py --runsolver ./target_algorithms/runsolver/runsolver-3.3.4/src/runsolver -- <instance> <instance specific> <cutoff> <runlength> <seed>
-@warning:  use "--" after the last additional argument of the wrapper to deactivate prefix matching! 
+@author:    Marius Lindauer, Chris Fawcett, Alex Fréchette, Frank Hutter  
+@copyright: 2014 AClib. All rights reserved.
+@license:   GPL
+@contact:   lindauer@informatik.uni-freiburg.de, fawcettc@cs.ubc.ca, afrechet@cs.ubc.ca, fh@informatik.uni-freiburg.de
 '''
 
 import sys
