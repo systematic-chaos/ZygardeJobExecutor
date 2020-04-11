@@ -19,7 +19,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class ZygardeRequest {
 	
 	private String domain;
+	private Data dataset;
 	private List<Method> methods;
+	private String parameterSearch = ParameterSearch.RANDOM.toString();
 	private ComputationalResource computationalResources;
 	private String emailAddress;
 	
@@ -34,12 +36,28 @@ public class ZygardeRequest {
 		this.domain = domain;
 	}
 	
+	public Data getDataset() {
+		return this.dataset;
+	}
+	
+	public void setDataset(Data dataset) {
+		this.dataset = dataset;
+	}
+	
 	public List<Method> getMethods() {
 		return this.methods;
 	}
 	
 	public void setMethods(List<Method> methods) {
 		this.methods = methods;
+	}
+	
+	public String getParameterSearch() {
+		return this.parameterSearch;
+	}
+	
+	public void setParameterSearch(String parameterSearch) {
+		this.parameterSearch = parameterSearch;
 	}
 	
 	public ComputationalResource getComputationalResources() {

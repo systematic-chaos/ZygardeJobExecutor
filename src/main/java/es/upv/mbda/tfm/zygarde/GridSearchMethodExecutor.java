@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import es.upv.mbda.tfm.zygarde.result.AlgorithmResult;
 import es.upv.mbda.tfm.zygarde.result.ModelResult;
 import es.upv.mbda.tfm.zygarde.schema.Algorithm;
+import es.upv.mbda.tfm.zygarde.schema.Data;
 import es.upv.mbda.tfm.zygarde.schema.Hyperparameter;
 import es.upv.mbda.tfm.zygarde.schema.Method;
 
@@ -34,8 +35,9 @@ import es.upv.mbda.tfm.zygarde.schema.Method;
  */
 public class GridSearchMethodExecutor extends MethodExecutor {
 	
-	public GridSearchMethodExecutor(Method method, JobLifecycle lifecycle) {
+	public GridSearchMethodExecutor(Method method, Data dataset, JobLifecycle lifecycle) {
 		this.method = method;
+		this.dataset = dataset;
 		this.lifecycle = lifecycle;
 	}
 	
@@ -58,12 +60,12 @@ public class GridSearchMethodExecutor extends MethodExecutor {
 			tasks = combineParams(method.getHyperparameters())
 					.stream()
 					.map(paramConfig -> new ParameterizedAlgorithmExecutor(
-							algorithm, paramConfig, lifecycle))
+							algorithm, paramConfig, dataset, lifecycle))
 					.collect(Collectors.toList());
 		} else {
 			tasks = new ArrayList<>();	// unparameterized algorithm
 			tasks.add(new ParameterizedAlgorithmExecutor(
-					algorithm, new HashMap<>(), lifecycle));
+					algorithm, new HashMap<>(), dataset, lifecycle));
 		}
 		
 		return tasks;
@@ -97,6 +99,7 @@ public class GridSearchMethodExecutor extends MethodExecutor {
 				new ArrayList<>());
 	}
 	
+	@SuppressWarnings("unused")
 	private List<Map<String, ?>> combineParams(List<Hyperparameter<?>> hyperparameters,
 			int dimension, int[] indexes) {
 		List<Map<String, ?>> paramConfigurations = new ArrayList<>();

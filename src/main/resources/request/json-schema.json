@@ -12,6 +12,19 @@
                 "deep-learning"
             ]
         },
+        "dataset": {
+        	"type": "object",
+        	"properties": {
+        		"path": {
+        			"type": "string"
+        		},
+        		"format": {
+        			"type": "string",
+        			"enum": ["libsvm"]
+        		}
+        	},
+        	"required": ["path"]
+        },
         "methods": {
             "type": "array",
             "items": {
@@ -20,6 +33,7 @@
                     "algorithm": {
                         "type": "string",
                         "enum": [
+                        	"linear-regression",
                             "decision-tree",
                             "svm",
                             "k-means",
@@ -49,8 +63,7 @@
                                 "param",
                                 "values"
                             ]
-                        },
-                        "uniqueItems": true
+                        }
                     }
                 },
                 "required": [
@@ -58,6 +71,14 @@
                 ]
             },
             "uniqueItems": true
+        },
+        "parameterSearch": {
+        	"type": "string",
+        	"enum": [
+        		"grid",
+        		"random",
+        		"bayesian-optimization"
+        	]
         },
         "computationalResources": {
             "type": "object",

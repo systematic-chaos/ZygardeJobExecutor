@@ -3,6 +3,7 @@ package es.upv.mbda.tfm.zygarde;
 import java.util.concurrent.Callable;
 
 import es.upv.mbda.tfm.zygarde.result.AlgorithmResult;
+import es.upv.mbda.tfm.zygarde.schema.Data;
 import es.upv.mbda.tfm.zygarde.schema.Method;
 
 /**
@@ -20,6 +21,7 @@ import es.upv.mbda.tfm.zygarde.schema.Method;
 public abstract class MethodExecutor implements Callable<AlgorithmResult> {
 	
 	protected Method method;
+	protected Data dataset;
 	protected JobLifecycle lifecycle;
 	
 	@Override
@@ -29,8 +31,9 @@ public abstract class MethodExecutor implements Callable<AlgorithmResult> {
 	
 	abstract public AlgorithmResult executeMethod();
 	
-	public AlgorithmResult executeMethod(Method method) {
+	public AlgorithmResult executeMethod(Method method, Data dataset) {
 		this.method = method;
+		this.dataset = dataset;
 		return executeMethod();
 	}
 }

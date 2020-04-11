@@ -33,8 +33,6 @@ import es.upv.mbda.tfm.zygarde.schema.ZygardeRequest;
 public class FileSystemResourcesEntryPoint {
 	
 	private static final String JSON_SCHEMA = "request/json-schema.json";
-	// private static final String[] JSON_REQUESTS = { "request/request-body.json", "request/request-body-full.json" };
-	private static final String[] JSON_REQUESTS = { "request/request-smac.json" };
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemResourcesEntryPoint.class);
 	
@@ -42,9 +40,10 @@ public class FileSystemResourcesEntryPoint {
 		InputStream schemaStream = FileSystemResourcesEntryPoint.class
 				.getClassLoader().getResourceAsStream(JSON_SCHEMA);
 		RequestParser requestParser = new RequestParser(schemaStream);
-		Collection<Thread> jobExecutorThreads = new ArrayList<>(JSON_REQUESTS.length);
+		final String[] jsonRequests = args;
+		Collection<Thread> jobExecutorThreads = new ArrayList<>(jsonRequests.length);
 		
-		for (String jsonRequestFile : JSON_REQUESTS) {
+		for (String jsonRequestFile : jsonRequests) {
 			String messageId = UUID.randomUUID().toString();
 			LOGGER.info(String.format("Request %s\tProcessing file %s", messageId, jsonRequestFile));
 			try {

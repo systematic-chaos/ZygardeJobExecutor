@@ -23,6 +23,7 @@ import ca.ubc.cs.beta.aeatk.parameterconfigurationspace.ParameterConfiguration;
 import es.upv.mbda.tfm.zygarde.result.AlgorithmResult;
 import es.upv.mbda.tfm.zygarde.result.ModelResult;
 import es.upv.mbda.tfm.zygarde.schema.Algorithm;
+import es.upv.mbda.tfm.zygarde.schema.Data;
 import es.upv.mbda.tfm.zygarde.schema.Hyperparameter;
 import es.upv.mbda.tfm.zygarde.schema.Method;
 import es.upv.mbda.tfm.zygarde.smac.SmacExecutor;
@@ -41,8 +42,9 @@ import es.upv.mbda.tfm.zygarde.smac.SmacExecutor;
  */
 public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 	
-	public BayesianOptimizationMethodExecutor(Method method, JobLifecycle lifecycle) {
+	public BayesianOptimizationMethodExecutor(Method method, Data dataset, JobLifecycle lifecycle) {
 		this.method = method;
+		this.dataset = dataset;
 		this.lifecycle = lifecycle;
 	}
 	
@@ -73,7 +75,7 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		
 		Map<String, String> argsMap = new HashMap<>();
 		argsMap.put("scenario-file", getScenarioPath().toString());
-		argsMap.put("pcs-file", writeParamsFile(seed, true).toString());
+		argsMap.put("pcs-file", writeParamsFile(seed, true, dataset != null).toString());
 		argsMap.put("numberOfRunsLimit", String.valueOf(getNumberOfRunsLimit()));
 		argsMap.put("rungroup", String.format("%s-%d", method.getAlgorithm(), seed));
 		argsMap.put("seed", String.valueOf(seed));
@@ -101,17 +103,23 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		return scenarioPath;
 	}
 	
-	private Path writeParamsFile(int seed, boolean setupAlgorithm) throws IOException {
+	private Path writeParamsFile(int seed,
+			boolean setupAlgorithm, boolean setupDataset) throws IOException {
 		Path paramsPath = Paths.get(System.getProperty("user.dir"), "smac", "params",
 				String.format("params-%d.pcs", seed));
-		List<Hyperparameter<?>> hyperparameters = method.getHyperparameters();
+		List<Hyperparameter<?>> hyperparameters = new ArrayList<>(method.getHyperparameters().size() + 3);
 		
-		// Add the algorithm itself as a single-valued categorical parameter
+		// Add the algorithm and the data set themselves as single-values categorical parameters
 		if (setupAlgorithm) {
-			hyperparameters = new ArrayList<>(hyperparameters.size() + 1);
-			hyperparameters.add(getAlgorithmAsHyperparameter(this.method.getAlgorithm()));
-			hyperparameters.addAll(method.getHyperparameters());
+			hyperparameters.add(getPropertyAsHyperparameter("algorithm", this.method.getAlgorithm()));
 		}
+		if (setupDataset) {
+			hyperparameters.add(getPropertyAsHyperparameter("dataset", this.dataset.getPath()));
+			if (this.dataset.getFormat() != null) {
+				hyperparameters.add(getPropertyAsHyperparameter("dataFormat", this.dataset.getFormat()));
+			}
+		}
+		hyperparameters.addAll(method.getHyperparameters());
 		
 		final String CATEGORICAL_PARAM = " categorical ";
 		List<String> paramLines = new ArrayList<>(hyperparameters.size());
@@ -131,16 +139,16 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		return paramsPath;
 	}
 	
-	private Hyperparameter<String> getAlgorithmAsHyperparameter(String algorithm) {
-		Hyperparameter<String> hp = new Hyperparameter<>();
-		List<String> hpValues = new ArrayList<>();
-		hpValues.add(algorithm);
+	private <P> Hyperparameter<P> getPropertyAsHyperparameter(String name, P value) {
+		Hyperparameter<P> hp = new Hyperparameter<>();
+		List<P> hpValues = new ArrayList<>();
+		hpValues.add(value);
 		
-		hp.setParam("algorithm");
+		hp.setParam(name);
 		hp.setValues(hpValues);
 		return hp;
 	}
-	
+		
 	private int getNumberOfRunsLimit() {
 		int numCombinations = 1;
 		for (Hyperparameter<?> hp : method.getHyperparameters()) {

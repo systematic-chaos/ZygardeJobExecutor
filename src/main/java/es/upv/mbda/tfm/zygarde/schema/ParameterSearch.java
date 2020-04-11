@@ -13,32 +13,29 @@ import java.util.Map;
  * @license		GPLv3.0
  * @contact		fjfernandezbravo@iti.es
  * 
- * @class es.upv.mbda.tfm.zygarde.schema.Algorithm
+ * @class		es.upv.mbda.tfm.zygarde.schema.ParameterSearch
  */
-public enum Algorithm {
+public enum ParameterSearch {
 	
-	DECISION_TREE("decision-tree"),
-	SVM("svm"),
-	K_MEANS("k-means"),
-	NEURAL_NETWORK("neural-network"),
-	BRANIN("branin"),
-	LINEAR_REGRESSION("linear-regression");
+	GRID("grid"),
+	RANDOM("random"),
+	BAYESIAN_OPTIMIZATION("bayesian-optimization");
 	
 	public final String name;
-	private static Map<String, Algorithm> nameValues;
+	private static Map<String, ParameterSearch> nameValues;
 	
-	private Algorithm(String name) {
+	private ParameterSearch(String name) {
 		this.name = name;
 	}
 	
 	static {
 		nameValues = new HashMap<>();
-		for (Algorithm enumValue : values()) {
+		for (ParameterSearch enumValue : values()) {
 			nameValues.put(enumValue.name, enumValue);
 		}
 	}
 	
-	public static Algorithm forName(String label) {
+	public static ParameterSearch forName(String label) {
 		return nameValues.get(label);
 	}
 	

@@ -13,32 +13,27 @@ import java.util.Map;
  * @license		GPLv3.0
  * @contact		fjfernandezbravo@iti.es
  * 
- * @class es.upv.mbda.tfm.zygarde.schema.Algorithm
+ * @class es.upvm.bda.tfm.zygarde.schema.DataFormat
  */
-public enum Algorithm {
+public enum DataFormat {
 	
-	DECISION_TREE("decision-tree"),
-	SVM("svm"),
-	K_MEANS("k-means"),
-	NEURAL_NETWORK("neural-network"),
-	BRANIN("branin"),
-	LINEAR_REGRESSION("linear-regression");
+	LIB_SVM("libsvm");
 	
 	public final String name;
-	private static Map<String, Algorithm> nameValues;
+	private static Map<String, DataFormat> nameValues;
 	
-	private Algorithm(String name) {
+	private DataFormat(String name) {
 		this.name = name;
 	}
 	
 	static {
 		nameValues = new HashMap<>();
-		for (Algorithm enumValue : values()) {
+		for (DataFormat enumValue : values()) {
 			nameValues.put(enumValue.name, enumValue);
 		}
 	}
 	
-	public static Algorithm forName(String label) {
+	public static DataFormat forName(String label) {
 		return nameValues.get(label);
 	}
 	

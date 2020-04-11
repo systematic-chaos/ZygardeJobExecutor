@@ -49,7 +49,8 @@ class GenericSmacWrapper(AbstractWrapper):
 
         # Add the parameters in <config> to cmd
         for name, value in config.items():
-            cmd += " -%s %s " % (name[1:], value)
+            arg_prefix = '--' if name[1:] in ['algorithm', 'dataset'] else '-'
+            cmd += " %s%s %s " % (arg_prefix, name[1:], value)
         
         return cmd
     

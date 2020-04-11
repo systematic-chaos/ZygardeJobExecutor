@@ -17,18 +17,19 @@ Polytechnic University of Valencia
 
 import sys
 
+from uuid import uuid4 as uuid
+
 from algorithm.algorithm_wrapper import perform_training
 
 # Compute the target algorithm
 try:
-    outputValue = perform_training("algorithm_asfd", sys.argv[1:])
+    outputValue = perform_training(str(uuid()), sys.argv[1:])
     print("Result for Zygarde: %s\t%f" % ('SUCCESS', outputValue), file=sys.stdout)
 except ValueError as ve:
     print("Result for Zygarde: %s\t%f" % ('CRASH', float(0)), file=sys.stdout)
     print("ValueError:", ve, file=sys.stderr)
 except Exception as e:
-    # An exception causes minus infinite to be returned,
-    # discarding it from becoming a precision value to be
-    # considered as an incumbent candidate
+    # An exception causes minus infinite to be returned, discarding it from becoming
+    # a precision value to be considered as an incumbent candidate
     print("Result for Zygarde: %s\t%f" % ('CRASH', float('-inf')), file=sys.stdout)
     print(e, file=sys.stderr)

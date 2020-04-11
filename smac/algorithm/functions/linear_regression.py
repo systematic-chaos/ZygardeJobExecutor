@@ -35,6 +35,4 @@ def linear_regression_func(spark, params={}, data=None):
             hyperparameters[k] = v
     
     lr_model = linear_regression(spark, data, hyperparameters)
-    print("MSE:  %.4f" % lr_model.summary.meanSquaredError)
-    print("RMSE: %.4f" % lr_model.summary.rootMeanSquaredError)
     return -lr_model.summary.rootMeanSquaredError

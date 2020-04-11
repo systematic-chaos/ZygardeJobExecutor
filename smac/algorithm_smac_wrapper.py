@@ -16,11 +16,13 @@ Polytechnic University of Valencia
 
 import sys
 
+from uuid import uuid4 as uuid
+
 from algorithm.algorithm_wrapper import perform_training
 
 # Compute the target algorithm
 try:
-    outputValue = perform_training("algorithm_saf", sys.argv[1:])
+    outputValue = perform_training(str(uuid()), sys.argv[6:])
     print("Result for SMAC: SUCCESS, 0, 0, %f, 0" % -outputValue, file=sys.stdout)
 except ValueError as ve:
     print("Result for SMAC: CRASH, 0, 0, %f, 0" % float(0), file=sys.stdout)

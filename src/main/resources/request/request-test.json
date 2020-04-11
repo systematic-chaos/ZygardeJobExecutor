@@ -1,0 +1,40 @@
+{
+	"domain": "regression",
+	"methods": [
+		{
+			"algorithm": "linear-regression",
+			"hyperparameters": [
+				{
+					"param": "x1",
+					"values": [2.5, -5, 10, 0.397887, -3.14159, 3.14159, 9.42478]
+				},
+				{
+					"param": "x2",
+					"values": [7.5, 0, 15, 12.275, 2.275, 2.475, 0.397887]
+				},
+				{
+					"param": "maxIter",
+					"values": [10, 50, 100]
+				},
+				{
+					"param": "regParam",
+					"values": [0.0, 0.3]
+				},
+				{
+					"param": "elasticNetParam",
+					"values": [0.0, 0.8]
+				}
+			]
+		}
+	],
+	"dataset": {
+		"path": "s3a://zygarde-data/mllib/sample_linear_regression_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
+	"computationalResources": {
+		"minTotalInstances": 1,
+		"maxTotalInstances": 1
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}

@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import es.upv.mbda.tfm.zygarde.schema.Data;
 import es.upv.mbda.tfm.zygarde.schema.Method;
 
 
@@ -25,8 +26,9 @@ public class RandomSearchMethodExecutor extends GridSearchMethodExecutor {
 	
 	private int maxConcurrency;
 	
-	public RandomSearchMethodExecutor(Method method, JobLifecycle lifecycle, int maxConcurrency) {
-		super(method, lifecycle);
+	public RandomSearchMethodExecutor(Method method, Data dataset, JobLifecycle lifecycle,
+			int maxConcurrency) {
+		super(method, dataset, lifecycle);
 		this.maxConcurrency = maxConcurrency;
 	}
 	

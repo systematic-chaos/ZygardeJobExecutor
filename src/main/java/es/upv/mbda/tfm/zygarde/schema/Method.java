@@ -3,7 +3,7 @@ package es.upv.mbda.tfm.zygarde.schema;
 import java.util.List;
 
 /**
- * Zygarde: Platform for reactive training of models in the cloud.
+ * Zygarde: Platform for reactive training of models in the cloud
  * Master in Big Data Analytics
  * Polytechnic University of Valencia
  * 

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import es.upv.mbda.tfm.zygarde.result.ModelResult;
 import es.upv.mbda.tfm.zygarde.schema.Algorithm;
+import es.upv.mbda.tfm.zygarde.schema.Data;
 
 /**
  * Zygarde: Platform for reactive training of models in the cloud
@@ -29,17 +31,19 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 	
 	private Algorithm algorithm;
 	private Map<String, ?> hyperparameters;
+	private Data dataset;
 	private JobLifecycle lifecycle;
 	
 	public ParameterizedAlgorithmExecutor(Algorithm algorithm,
-			Map<String, ?> params, JobLifecycle lifecycle) {
+			Map<String, ?> params, Data dataset, JobLifecycle lifecycle) {
 		this.algorithm = algorithm;
 		this.hyperparameters = params;
+		this.dataset = dataset;
 		this.lifecycle = lifecycle;
 	}
 	
 	public ModelResult executeAlgorithm() {
-		double precision = executeParameterizedAlgorithm(algorithm, hyperparameters);
+		double precision = executeParameterizedAlgorithm(algorithm, hyperparameters, dataset);
 		ModelResult result = new ModelResult(precision, algorithm, hyperparameters);
 		LOGGER.info(String.format("%s:\t%1.4f", algorithm, precision));
 		return result;
@@ -58,12 +62,12 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 		return result;
 	}
 	
-	private double executeParameterizedAlgorithm(Algorithm alg, Map<String, ?> params) {
+	private double executeParameterizedAlgorithm(Algorithm alg, Map<String, ?> params, Data dataset) {
 		double precision = 0.;
 		final String SUCCESS_PREFIX = "Result for Zygarde: SUCCESS\t";
 		ProcessBuilder procBuilder = new ProcessBuilder();
 		procBuilder.directory(new File(System.getProperty("user.dir")));
-		procBuilder.command(composeCmdArgs(alg.toString(), params));
+		procBuilder.command(composeCmdArgs(alg.toString(), params, dataset));
 		
 		BufferedReader procStdOutput = null;
 		BufferedReader procErrOutput = null;
@@ -103,15 +107,25 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 		return precision;
 	}
 	
-	private String[] composeCmdArgs(String alg, Map<String, ?> params) {
+	private String[] composeCmdArgs(String alg, Map<String, ?> params, Data dataset) {
 		final String EXEC = "smac/algorithm_zygarde_wrapper.py";
 		
-		int i = 3;
-		String[] args = new String[params.size() * 2 + i];
-		args[0] = EXEC;
+		int i = 0;
+		String[] args = new String[params.size() * 2 + 7];
+		args[i++] = EXEC;
 		
-		args[1] = "-" + "algorithm";
-		args[2] = alg;
+		args[i++] = "--" + "algorithm";
+		args[i++] = alg;
+		
+		if (dataset != null) {
+			args[i++] = "--" + "dataset";
+			args[i++] = dataset.getPath();
+			
+			if (dataset.getFormat() != null) {
+				args[i++] = "--dataFormat";
+				args[i++] = dataset.getFormat();
+			}
+		}
 		
 		for (Map.Entry<String, ?> param : params.entrySet()) {
 			args[i] = "-" + param.getKey();
@@ -119,7 +133,7 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 			i += 2;
 		}
 		
-		return args;
+		return Arrays.copyOf(args, i);
 	}
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParameterizedAlgorithmExecutor.class);

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import es.upv.mbda.tfm.zygarde.result.AlgorithmResult;
 import es.upv.mbda.tfm.zygarde.result.ModelResult;
+import es.upv.mbda.tfm.zygarde.schema.ParameterSearch;
 import es.upv.mbda.tfm.zygarde.result.Result;
 import es.upv.mbda.tfm.zygarde.schema.ZygardeRequest;
 
@@ -52,18 +53,32 @@ public class JobRequestExecutor implements Runnable {
 		LOGGER.info(request.toString());
 		
 		SortedSet<ModelResult> globalResults = new TreeSet<>(Comparator.reverseOrder());
+		List<MethodExecutor> tasks;
 		
-		/*List<MethodExecutor> tasks = request.getMethods().stream()
-				.map(method -> new BayesianOptimizationMethodExecutor(method, lifecycle))
-				.collect(Collectors.toList());*/
-		/*List<MethodExecutor> tasks = request.getMethods().stream()
-				.map(method -> new GridSearchMethodExecutor(method, lifecycle))
-				.collect(Collectors.toList());*/
-		List<MethodExecutor> tasks = request.getMethods().stream()
-				.map(method -> new RandomSearchMethodExecutor(method, lifecycle,
-						request.getComputationalResources().getMaxTotalInstances()))
+		switch (ParameterSearch.forName(request.getParameterSearch())) {
+		case BAYESIAN_OPTIMIZATION:
+			tasks = request.getMethods().stream()
+				.map(method -> new BayesianOptimizationMethodExecutor(method, request.getDataset(), lifecycle))
 				.collect(Collectors.toList());
-		
+			break;
+		case GRID:
+			tasks = request.getMethods().stream()
+				.map(method -> new GridSearchMethodExecutor(method, request.getDataset(), lifecycle))
+				.collect(Collectors.toList());
+			break;
+		case RANDOM:
+			int concurrencyDegree = request.getComputationalResources() != null
+				&& request.getComputationalResources().getMaxTotalInstances() != null ?
+						request.getComputationalResources().getMaxTotalInstances()
+						: Runtime.getRuntime().availableProcessors();
+			tasks = request.getMethods().stream()
+				.map(method -> new RandomSearchMethodExecutor(method, request.getDataset(), lifecycle, concurrencyDegree))
+				.collect(Collectors.toList());
+				break;
+		default:
+			tasks = new ArrayList<>(0);
+		}
+				
 		ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
 		try {
 			List<Future<AlgorithmResult>> taskResults = executor.invokeAll(tasks);
