@@ -52,6 +52,12 @@ public class SqsEntryPoint {
 						LOGGER.error("Exception parsing JSON request\n" + e.getMessage(), e);
 					}
 				}
+			} else {
+				try {
+					Thread.sleep(50000);
+				} catch (InterruptedException ie) {
+					LOGGER.warn("InterruptedException: " + ie.getMessage());
+				}
 			}
 		}
 	}
