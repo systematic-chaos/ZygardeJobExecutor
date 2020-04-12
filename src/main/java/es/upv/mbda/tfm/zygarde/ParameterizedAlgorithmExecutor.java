@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,13 +80,15 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 			procErrOutput = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 			int exitCode = p.waitFor();
 			
-			String resultOutput = procStdOutput.readLine();
+			List<String> procResultOutput = procStdOutput.lines().collect(Collectors.toList());
 			if (exitCode == 0) {
-				if (resultOutput.startsWith(SUCCESS_PREFIX)) {
-					LOGGER.debug(resultOutput);
-					precision = Double.parseDouble(resultOutput.substring(SUCCESS_PREFIX.length()));
+				Optional<String> resultOutput = procResultOutput.stream()
+						.filter(line ->  line.startsWith(SUCCESS_PREFIX)).findFirst();
+				if (resultOutput.isPresent()) {
+					LOGGER.debug(resultOutput.get());
+					precision = Double.parseDouble(resultOutput.get().substring(SUCCESS_PREFIX.length()));
 				} else {
-					LOGGER.error(resultOutput);
+					procResultOutput.forEach(LOGGER::error);
 					procErrOutput.lines().forEach(LOGGER::warn);
 				}
 			} else {
