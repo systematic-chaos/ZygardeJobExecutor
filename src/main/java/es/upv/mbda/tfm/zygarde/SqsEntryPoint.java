@@ -91,12 +91,13 @@ public class SqsEntryPoint {
 		
 		public void onFinishTask(ModelResult taskResult) {
 			String taskResultMessage = taskResult.toString();
-			String s3Key = composePath(taskResult).toString();
 			String reportS3Key = composeReportPath(taskResult);
 			String modelS3Key  = composeModelPath(taskResult);
 			
-			s3.uploadFile(reportS3Key, RequestBody.fromString(taskResultMessage));
-			s3.uploadFile(modelS3Key, RequestBody.fromString(s3Key));
+			// Models and task reports are no longer uploaded to AWS S3 from here,
+			// this is currently done by the Python jobs which create the model.
+			// It would be cumbersome to pass back the models from those jobs
+			// to this runtime context just to upload them.
 			
 			LOGGER.info(taskResultMessage);
 			LOGGER.info(String.format("Uploaded %s to %s AWS S3 bucket", reportS3Key, MODEL_BUCKET));
@@ -141,7 +142,6 @@ public class SqsEntryPoint {
 		
 		private StringBuilder composePath(ModelResult taskResult) {
 			return new StringBuilder(request.getRequestId())
-					.append('/').append(request.getDomain())
 					.append('/').append(precisionFormatter.format(taskResult.getPrecision()))
 					.append('-').append(taskResult.getAlgorithm());
 		}

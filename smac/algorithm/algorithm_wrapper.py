@@ -12,8 +12,11 @@ Polytechnic University of Valencia
 @contact:   fjfernandezbravo@iti.es
 '''
 
+from os import remove as remove_file
+from shutil import rmtree as remove_dir
 from pyspark.sql import SparkSession
 
+from .s3_object_manager import upload_file
 from .functions.branin import branin_func as branin
 from .functions.linear_regression import linear_regression_func as linear_regression
 
@@ -28,7 +31,10 @@ def perform_training(app_name, runargs):
     spark = get_spark_session(app_name)
     data = load_s3_dataset(spark, data_source) if data_source else None
     #spark = None; data = None    # REMOVE ME
-    score = algorithm_modules[algorithm](spark, func_params, data)
+    score, model = algorithm_modules[algorithm](spark, func_params, data)
+
+    upload_model_s3(model, app_name, algorithm, score, func_params)
+
     spark.stop()
     return score
 
@@ -46,6 +52,31 @@ def load_s3_dataset(spark, data_source, num_features=None):
     else:
         dataset = df_reader.load(data_source['path'])
     return dataset
+
+def upload_model_s3(model, request_id, algorithm, precision, hyperparams):
+    if not model:
+        return
+    
+    model_bucket = 'zygarde-model'
+
+    compose_upload_report(model_bucket, request_id, algorithm, precision, hyperparams)
+    save_upload_model(model_bucket, model, request_id, algorithm, precision)
+
+def save_upload_model(s3_bucket, model, request_id, algorithm, precision):
+    tmp_model_path = compose_temp_path(request_id, precision, algorithm) + "-model"
+
+    model.write().format('pmml').save(tmp_model_path)
+    upload_file(tmp_model_path + "/part-00000", s3_bucket,
+        compose_model_path(request_id, precision, algorithm))
+    remove_dir(tmp_model_path)
+
+def compose_upload_report(s3_bucket, request_id, algorithm, precision, hyperparams):
+    tmp_report_path = compose_temp_path(request_id, precision, algorithm) + "-report"
+
+    with open(tmp_report_path, 'w') as report_file:
+        report_file.write(compose_report_message(algorithm, precision, hyperparams))
+    upload_file(tmp_report_path, s3_bucket, compose_report_path(request_id, precision, algorithm))
+    remove_file(tmp_report_path)
 
 # For black box function optimization, we can ignore the first arguments.
 # The remaining arguments specify parameters using this format: -name value,
@@ -69,6 +100,32 @@ def get_command_line_args(runargs):
         i += 2
     return algorithm, dataset, args
 
+def compose_report_message(algorithm, precision, hyperparams):
+    report_msg = "%s:\t%1.4f\t" % (algorithm, precision)
+    for k, hp in hyperparams.items():
+        report_msg += "    %s: %s" % (k, str(hp))
+    return report_msg
+
+def compose_path(request_id, precision, algorithm):
+    return "%s/%1.4f-%s" % (request_id, precision, algorithm)
+
+def compose_report_path(request_id, precision, algorithm):
+    return "%s-%s.%s" % (compose_path(request_id, precision, algorithm), "report", "txt")
+
+def compose_model_path(request_id, precision, algorithm):
+    return "%s-%s.%s" % (compose_path(request_id, precision, algorithm), "model", "xml")
+
+def compose_temp_path(request_id, precision, algorithm):
+    return "%s/%s-%.4f-%s" % ("/tmp", request_id, precision, algorithm)
+
+def cast_argument(value):
+    if is_int(value):
+        return int(value)
+    elif is_float(value):
+        return float(value)
+    else:
+        return str(value)
+
 def is_int(value):
     try:
         int(value)
@@ -82,11 +139,3 @@ def is_float(value):
         return True
     except ValueError:
         return False
-
-def cast_argument(value):
-    if is_int(value):
-        return int(value)
-    elif is_float(value):
-        return float(value)
-    else:
-        return str(value)

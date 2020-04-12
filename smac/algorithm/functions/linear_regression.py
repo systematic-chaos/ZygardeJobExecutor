@@ -35,4 +35,4 @@ def linear_regression_func(spark, params={}, data=None):
             hyperparameters[k] = v
     
     lr_model = linear_regression(spark, data, hyperparameters)
-    return -lr_model.summary.rootMeanSquaredError
+    return -lr_model.summary.rootMeanSquaredError, lr_model

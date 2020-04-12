@@ -27,7 +27,7 @@ public abstract class JobLifecycleFinish implements JobLifecycle {
 	static {
 		DecimalFormatSymbols decimalSeparator = DecimalFormatSymbols.getInstance();
 		decimalSeparator.setDecimalSeparator(',');
-		precisionFormatter = new DecimalFormat("0.000#", decimalSeparator);
+		precisionFormatter = new DecimalFormat("0.0000#", decimalSeparator);
 	}
 	
 	protected String composeExecutionReport(Result executionResult) {
