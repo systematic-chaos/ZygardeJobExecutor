@@ -1,5 +1,14 @@
 package es.upv.mbda.tfm.zygarde;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import es.upv.mbda.tfm.zygarde.result.AlgorithmResult;
 import es.upv.mbda.tfm.zygarde.result.ModelResult;
-import es.upv.mbda.tfm.zygarde.schema.ParameterSearch;
 import es.upv.mbda.tfm.zygarde.result.Result;
+import es.upv.mbda.tfm.zygarde.schema.ParameterSearch;
 import es.upv.mbda.tfm.zygarde.schema.ZygardeRequest;
 
 /**
@@ -53,8 +62,41 @@ public class JobRequestExecutor implements Runnable {
 		LOGGER.info(request.toString());
 		
 		SortedSet<ModelResult> globalResults = new TreeSet<>(Comparator.reverseOrder());
-		List<MethodExecutor> tasks;
+		List<MethodExecutor> tasks = prepareTasks();
 		
+		try {
+			transferDatasetToS3();
+			
+			ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
+			List<Future<AlgorithmResult>> taskResults = executor.invokeAll(tasks);
+			executor.shutdown();
+			if (!executor.awaitTermination(12l, TimeUnit.HOURS)) {
+				executor.shutdownNow();
+			}
+			
+			for (Future<AlgorithmResult> partialResult : taskResults) {
+				globalResults.addAll(partialResult.get().getResults());
+			}
+			LOGGER.info(String.format("Best precision: %1.4f\tAlgorithm: %s",
+					globalResults.first().getPrecision(),
+					globalResults.first().getAlgorithm()));
+		} catch (IOException ioe) {
+			LOGGER.error("IOException while transferring dataset to AWS S3: " + ioe.getMessage());
+		} catch (InterruptedException | ExecutionException e) {
+			LOGGER.error("Interrupted exception on request's methods execution\n"
+					+ e.getMessage(), e);
+		}
+		
+		return new Result(new ArrayList<>(globalResults));
+	}
+	
+	public Result executeRequest(ZygardeRequest request) {
+		this.request = request;
+		return executeRequest();
+	}
+	
+	private List<MethodExecutor> prepareTasks() {
+		List<MethodExecutor> tasks;
 		switch (ParameterSearch.forName(request.getParameterSearch())) {
 		case BAYESIAN_OPTIMIZATION:
 			tasks = request.getMethods().stream()
@@ -74,36 +116,42 @@ public class JobRequestExecutor implements Runnable {
 			tasks = request.getMethods().stream()
 				.map(method -> new RandomSearchMethodExecutor(method, request.getDataset(), lifecycle, concurrencyDegree))
 				.collect(Collectors.toList());
-				break;
+			break;
 		default:
 			tasks = new ArrayList<>(0);
 		}
-				
-		ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
-		try {
-			List<Future<AlgorithmResult>> taskResults = executor.invokeAll(tasks);
-			executor.shutdown();
-			if (!executor.awaitTermination(12l, TimeUnit.HOURS)) {
-				executor.shutdownNow();
-			}
-			
-			for (Future<AlgorithmResult> partialResult : taskResults) {
-				globalResults.addAll(partialResult.get().getResults());
-			}
-			LOGGER.info(String.format("Best precision: %1.4f\tAlgorithm: %s",
-					globalResults.first().getPrecision(),
-					globalResults.first().getAlgorithm()));
-		} catch (InterruptedException | ExecutionException e) {
-			LOGGER.error("Interrupted exception on request's methods execution\n"
-					+ e.getMessage(), e);
-		}
-		
-		return new Result(new ArrayList<>(globalResults));
+		return tasks;
 	}
 	
-	public Result executeRequest(ZygardeRequest request) {
-		this.request = request;
-		return executeRequest();
+	private void transferDatasetToS3() throws IOException {
+		if (request.getDataset() == null || request.getDataset().getPath().startsWith("s3")) {
+			return;
+		}
+		
+		String requestDatasetPath = request.getDataset().getPath();
+		File datasetDir = Paths.get("/tmp", request.getRequestId()).toFile();
+		File datasetFile = Paths.get(datasetDir.getPath(),
+				requestDatasetPath.substring(requestDatasetPath.lastIndexOf(File.separator) + 1)).toFile();
+		
+		datasetDir.mkdir();
+		
+		try (InputStream is = new URL(request.getDataset().getPath()).openStream();
+				FileOutputStream fos = new FileOutputStream(datasetFile)) {
+			ReadableByteChannel rbc = Channels.newChannel(is);
+			FileChannel fc = fos.getChannel();
+			fc.transferFrom(rbc, 0, Long.MAX_VALUE);
+		}
+		
+		S3ObjectManager s3Client = new S3ObjectManager("zygarde-data");
+		s3Client.uploadFile(
+				String.join(File.separator, datasetDir.getName(), datasetFile.getName()),
+				datasetFile.toPath());
+		
+		request.getDataset().setPath(String.join(File.separator, "s3a:/",
+				s3Client.getBucket(), datasetDir.getName(), datasetFile.getName()));
+		
+		datasetFile.delete();
+		datasetDir.delete();
 	}
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(JobRequestExecutor.class);
