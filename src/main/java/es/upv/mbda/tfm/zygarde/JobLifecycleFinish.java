@@ -2,6 +2,7 @@ package es.upv.mbda.tfm.zygarde;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import es.upv.mbda.tfm.zygarde.result.ModelResult;
 import es.upv.mbda.tfm.zygarde.result.Result;
@@ -26,13 +27,14 @@ public abstract class JobLifecycleFinish implements JobLifecycle {
 	protected static DecimalFormat precisionFormatter;
 	static {
 		DecimalFormatSymbols decimalSeparator = DecimalFormatSymbols.getInstance();
-		decimalSeparator.setDecimalSeparator(',');
-		precisionFormatter = new DecimalFormat("0.0000#", decimalSeparator);
+		decimalSeparator.setDecimalSeparator(
+				DecimalFormatSymbols.getInstance(Locale.US).getDecimalSeparator());
+		precisionFormatter = new DecimalFormat("0.000#", decimalSeparator);
 	}
 	
 	protected String composeExecutionReport(Result executionResult) {
 		StringBuilder executionReport = new StringBuilder(
-				String.format(
+				String.format(Locale.US,
 						"Best precision: %1.4f\tAlgorithm: %s\n\n",
 						executionResult.getBestPrecision(),
 						executionResult.getBestResult().getAlgorithm()));

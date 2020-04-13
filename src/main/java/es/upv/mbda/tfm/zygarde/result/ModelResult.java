@@ -1,5 +1,6 @@
 package es.upv.mbda.tfm.zygarde.result;
 
+import java.util.Locale;
 import java.util.Map;
 
 import es.upv.mbda.tfm.zygarde.schema.Algorithm;
@@ -54,7 +55,8 @@ public class ModelResult implements Comparable<ModelResult> {
 	
 	@Override
 	public String toString() {
-		StringBuilder str = new StringBuilder(String.format("%s:\t%1.4f\t", algorithm, precision));
+		StringBuilder str = new StringBuilder(
+				String.format(Locale.US, "%s:\t%1.4f\t", algorithm, precision));
 		for (Map.Entry<String, ?> hp : hyperparameters.entrySet()) {
 			str.append(String.format("    %s: ", hp.getKey()) + hp.getValue());
 		}

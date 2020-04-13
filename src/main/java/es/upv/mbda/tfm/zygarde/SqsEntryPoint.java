@@ -3,6 +3,7 @@ package es.upv.mbda.tfm.zygarde;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -125,7 +126,7 @@ public class SqsEntryPoint {
 		@Override
 		protected String composeExecutionReport(Result executionResult) {
 			StringBuilder executionReport = new StringBuilder(
-					String.format(
+					String.format(Locale.US,
 							"Best precision: %1.4f\tAlgorithm: %s\t%s\n\n",
 							executionResult.getBestPrecision(),
 							executionResult.getBestResult().getAlgorithm(),
@@ -151,7 +152,7 @@ public class SqsEntryPoint {
 		}
 		
 		private String composeModelPath(ModelResult taskResult) {
-			return composePath(taskResult).append('-').append("model").append(".txt").toString();
+			return composePath(taskResult).append('-').append("model").append(".xml").toString();
 		}
 	}
 }
