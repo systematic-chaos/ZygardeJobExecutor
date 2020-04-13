@@ -35,18 +35,20 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 	private Algorithm algorithm;
 	private Map<String, ?> hyperparameters;
 	private Data dataset;
+	private String requestId;
 	private JobLifecycle lifecycle;
 	
-	public ParameterizedAlgorithmExecutor(Algorithm algorithm,
-			Map<String, ?> params, Data dataset, JobLifecycle lifecycle) {
+	public ParameterizedAlgorithmExecutor(Algorithm algorithm, Map<String, ?> params,
+			Data dataset, String requestId, JobLifecycle lifecycle) {
 		this.algorithm = algorithm;
 		this.hyperparameters = params;
 		this.dataset = dataset;
+		this.requestId = requestId;
 		this.lifecycle = lifecycle;
 	}
 	
 	public ModelResult executeAlgorithm() {
-		double precision = executeParameterizedAlgorithm(algorithm, hyperparameters, dataset);
+		double precision = executeParameterizedAlgorithm();
 		ModelResult result = new ModelResult(precision, algorithm, hyperparameters);
 		LOGGER.info(String.format("%s:\t%1.4f", algorithm, precision));
 		return result;
@@ -65,12 +67,12 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 		return result;
 	}
 	
-	private double executeParameterizedAlgorithm(Algorithm alg, Map<String, ?> params, Data dataset) {
+	private double executeParameterizedAlgorithm() {
 		double precision = 0.;
 		final String SUCCESS_PREFIX = "Result for Zygarde: SUCCESS\t";
 		ProcessBuilder procBuilder = new ProcessBuilder();
 		procBuilder.directory(new File(System.getProperty("user.dir")));
-		procBuilder.command(composeCmdArgs(alg.toString(), params, dataset));
+		procBuilder.command(composeCmdArgs());
 		
 		BufferedReader procStdOutput = null;
 		BufferedReader procErrOutput = null;
@@ -112,15 +114,18 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 		return precision;
 	}
 	
-	private String[] composeCmdArgs(String alg, Map<String, ?> params, Data dataset) {
+	private String[] composeCmdArgs() {
 		final String EXEC = "smac/algorithm_zygarde_wrapper.py";
 		
 		int i = 0;
-		String[] args = new String[params.size() * 2 + 7];
+		String[] args = new String[(hyperparameters.size() + 4) * 2 + 1];
 		args[i++] = EXEC;
 		
+		args[i++] = "--" + "id";
+		args[i++] = requestId;
+		
 		args[i++] = "--" + "algorithm";
-		args[i++] = alg;
+		args[i++] = algorithm.toString();
 		
 		if (dataset != null) {
 			args[i++] = "--" + "dataset";
@@ -132,7 +137,7 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 			}
 		}
 		
-		for (Map.Entry<String, ?> param : params.entrySet()) {
+		for (Map.Entry<String, ?> param : hyperparameters.entrySet()) {
 			args[i] = "-" + param.getKey();
 			args[i+1] = param.getValue().toString();
 			i += 2;

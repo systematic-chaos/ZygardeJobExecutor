@@ -26,9 +26,9 @@ public class RandomSearchMethodExecutor extends GridSearchMethodExecutor {
 	
 	private int maxConcurrency;
 	
-	public RandomSearchMethodExecutor(Method method, Data dataset, JobLifecycle lifecycle,
-			int maxConcurrency) {
-		super(method, dataset, lifecycle);
+	public RandomSearchMethodExecutor(String requestId, Method method, Data dataset,
+			JobLifecycle lifecycle, int maxConcurrency) {
+		super(requestId, method, dataset, lifecycle);
 		this.maxConcurrency = maxConcurrency;
 	}
 	

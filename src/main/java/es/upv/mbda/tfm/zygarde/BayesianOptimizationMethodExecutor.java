@@ -42,7 +42,8 @@ import es.upv.mbda.tfm.zygarde.smac.SmacExecutor;
  */
 public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 	
-	public BayesianOptimizationMethodExecutor(Method method, Data dataset, JobLifecycle lifecycle) {
+	public BayesianOptimizationMethodExecutor(String requestId, Method method, Data dataset, JobLifecycle lifecycle) {
+		this.requestId = requestId;
 		this.method = method;
 		this.dataset = dataset;
 		this.lifecycle = lifecycle;
@@ -75,7 +76,7 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		
 		Map<String, String> argsMap = new HashMap<>();
 		argsMap.put("scenario-file", getScenarioPath().toString());
-		argsMap.put("pcs-file", writeParamsFile(seed, true, dataset != null).toString());
+		argsMap.put("pcs-file", writeParamsFile(seed).toString());
 		argsMap.put("numberOfRunsLimit", String.valueOf(getNumberOfRunsLimit()));
 		argsMap.put("rungroup", String.format("%s-%d", method.getAlgorithm(), seed));
 		argsMap.put("seed", String.valueOf(seed));
@@ -103,17 +104,16 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		return scenarioPath;
 	}
 	
-	private Path writeParamsFile(int seed,
-			boolean setupAlgorithm, boolean setupDataset) throws IOException {
+	private Path writeParamsFile(int seed) throws IOException {
 		Path paramsPath = Paths.get(System.getProperty("user.dir"), "smac", "params",
 				String.format("params-%d.pcs", seed));
-		List<Hyperparameter<?>> hyperparameters = new ArrayList<>(method.getHyperparameters().size() + 3);
+		List<Hyperparameter<?>> hyperparameters = new ArrayList<>(method.getHyperparameters().size() + 4);
 		
-		// Add the algorithm and the data set themselves as single-values categorical parameters
-		if (setupAlgorithm) {
-			hyperparameters.add(getPropertyAsHyperparameter("algorithm", this.method.getAlgorithm()));
-		}
-		if (setupDataset) {
+		// Add the request identifier, the algorithm, and the data set
+		// themselves as single-values categorical parameters
+		hyperparameters.add(getPropertyAsHyperparameter("id", this.requestId));
+		hyperparameters.add(getPropertyAsHyperparameter("algorithm", this.method.getAlgorithm()));
+		if (this.dataset != null) {
 			hyperparameters.add(getPropertyAsHyperparameter("dataset", this.dataset.getPath()));
 			if (this.dataset.getFormat() != null) {
 				hyperparameters.add(getPropertyAsHyperparameter("dataFormat", this.dataset.getFormat()));
@@ -139,9 +139,9 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		return paramsPath;
 	}
 	
-	private <P> Hyperparameter<P> getPropertyAsHyperparameter(String name, P value) {
-		Hyperparameter<P> hp = new Hyperparameter<>();
-		List<P> hpValues = new ArrayList<>();
+	private <V> Hyperparameter<V> getPropertyAsHyperparameter(String name, V value) {
+		Hyperparameter<V> hp = new Hyperparameter<>();
+		List<V> hpValues = new ArrayList<>(1);
 		hpValues.add(value);
 		
 		hp.setParam(name);

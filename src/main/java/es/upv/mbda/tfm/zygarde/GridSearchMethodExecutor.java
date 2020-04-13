@@ -35,7 +35,8 @@ import es.upv.mbda.tfm.zygarde.schema.Method;
  */
 public class GridSearchMethodExecutor extends MethodExecutor {
 	
-	public GridSearchMethodExecutor(Method method, Data dataset, JobLifecycle lifecycle) {
+	public GridSearchMethodExecutor(String requestId, Method method, Data dataset, JobLifecycle lifecycle) {
+		this.requestId = requestId;
 		this.method = method;
 		this.dataset = dataset;
 		this.lifecycle = lifecycle;
@@ -60,12 +61,12 @@ public class GridSearchMethodExecutor extends MethodExecutor {
 			tasks = combineParams(method.getHyperparameters())
 					.stream()
 					.map(paramConfig -> new ParameterizedAlgorithmExecutor(
-							algorithm, paramConfig, dataset, lifecycle))
+							algorithm, paramConfig, dataset, requestId, lifecycle))
 					.collect(Collectors.toList());
 		} else {
 			tasks = new ArrayList<>();	// unparameterized algorithm
 			tasks.add(new ParameterizedAlgorithmExecutor(
-					algorithm, new HashMap<>(), dataset, lifecycle));
+					algorithm, new HashMap<>(), dataset, requestId, lifecycle));
 		}
 		
 		return tasks;

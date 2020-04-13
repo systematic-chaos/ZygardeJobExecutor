@@ -20,6 +20,7 @@ import es.upv.mbda.tfm.zygarde.schema.Method;
  */
 public abstract class MethodExecutor implements Callable<AlgorithmResult> {
 	
+	protected String requestId;
 	protected Method method;
 	protected Data dataset;
 	protected JobLifecycle lifecycle;

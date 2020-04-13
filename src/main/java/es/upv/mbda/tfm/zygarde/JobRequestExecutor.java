@@ -100,12 +100,12 @@ public class JobRequestExecutor implements Runnable {
 		switch (ParameterSearch.forName(request.getParameterSearch())) {
 		case BAYESIAN_OPTIMIZATION:
 			tasks = request.getMethods().stream()
-				.map(method -> new BayesianOptimizationMethodExecutor(method, request.getDataset(), lifecycle))
+				.map(method -> new BayesianOptimizationMethodExecutor(request.getRequestId(), method, request.getDataset(), lifecycle))
 				.collect(Collectors.toList());
 			break;
 		case GRID:
 			tasks = request.getMethods().stream()
-				.map(method -> new GridSearchMethodExecutor(method, request.getDataset(), lifecycle))
+				.map(method -> new GridSearchMethodExecutor(request.getRequestId(), method, request.getDataset(), lifecycle))
 				.collect(Collectors.toList());
 			break;
 		case RANDOM:
@@ -114,7 +114,7 @@ public class JobRequestExecutor implements Runnable {
 						request.getComputationalResources().getMaxTotalInstances()
 						: Runtime.getRuntime().availableProcessors();
 			tasks = request.getMethods().stream()
-				.map(method -> new RandomSearchMethodExecutor(method, request.getDataset(), lifecycle, concurrencyDegree))
+				.map(method -> new RandomSearchMethodExecutor(request.getRequestId(), method, request.getDataset(), lifecycle, concurrencyDegree))
 				.collect(Collectors.toList());
 			break;
 		default:

@@ -17,13 +17,11 @@ Polytechnic University of Valencia
 
 import sys
 
-from uuid import uuid4 as uuid
-
 from algorithm.algorithm_wrapper import perform_training
 
 # Compute the target algorithm
 try:
-    outputValue = perform_training(str(uuid()), sys.argv[1:])
+    outputValue = perform_training(sys.argv[1:])
     print("Result for Zygarde: %s\t%f" % ('SUCCESS', outputValue), file=sys.stdout)
 except ValueError as ve:
     print("Result for Zygarde: %s\t%f" % ('CRASH', float(0)), file=sys.stdout)

@@ -14,6 +14,7 @@ Polytechnic University of Valencia
 
 from os import remove as remove_file
 from shutil import rmtree as remove_dir
+from uuid import uuid4 as uuid
 from pyspark.sql import SparkSession
 
 from .s3_object_manager import upload_file
@@ -23,8 +24,8 @@ from .functions.linear_regression import linear_regression_func as linear_regres
 algorithm_modules = { 'branin': branin,
                     'linear-regression': linear_regression }
 
-def perform_training(app_name, runargs):
-    algorithm, data_source, func_params = get_command_line_args(runargs)
+def perform_training(runargs):
+    app_name, algorithm, data_source, func_params = get_command_line_args(runargs)
     if algorithm not in algorithm_modules:
         raise ValueError("algorithm function %s does not exist" % algorithm)
 
@@ -82,6 +83,7 @@ def compose_upload_report(s3_bucket, request_id, algorithm, precision, hyperpara
 # The remaining arguments specify parameters using this format: -name value,
 # except algorithm and data, which are preceded by two dashes.
 def get_command_line_args(runargs):
+    request_id = str(uuid())
     algorithm = None
     dataset = {}
     args = {}
@@ -89,7 +91,9 @@ def get_command_line_args(runargs):
     i = 0
     while i < len(runargs):
         a = runargs[i][1:]
-        if a == '-' + 'algorithm':
+        if a == '-' + 'id':
+            request_id = runargs[i+1]
+        elif a == '-' + 'algorithm':
             algorithm = runargs[i+1]
         elif a == '-' + 'dataset':
             dataset['path'] = runargs[i+1]
@@ -98,7 +102,7 @@ def get_command_line_args(runargs):
         else:
             args[a] = cast_argument(runargs[i+1])
         i += 2
-    return algorithm, dataset, args
+    return request_id, algorithm, dataset, args
 
 def compose_report_message(algorithm, precision, hyperparams):
     report_msg = "%s:\t%1.4f\t" % (algorithm, precision)
