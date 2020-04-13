@@ -1,6 +1,7 @@
 '''
-algorithm/algorithm_wrapper
+algorithm/algorithm_local_wrapper
 Wrapper for invoking functions from the command-line
+Useful for local development and debugging
 
 Zygarde: Platform for reactive training of models in the cloud
 Master in Big Data Analytics
@@ -29,14 +30,14 @@ def perform_training(runargs):
     if algorithm not in algorithm_modules:
         raise ValueError("algorithm function %s does not exist" % algorithm)
 
-    #spark = get_spark_session(app_name)
-    #data = load_s3_dataset(spark, data_source) if data_source else None
-    spark = None; data = None    # REMOVE ME
+    spark = get_spark_session(app_name)
+    data = load_s3_dataset(spark, data_source) if data_source else None
+    #spark = None; data = None    # REMOVE ME
     score, model = algorithm_modules[algorithm](spark, func_params, data)
 
-    upload_model_s3(model, app_name, algorithm, score, func_params)
+    #upload_model_s3(model, app_name, algorithm, score, func_params)
 
-    #spark.stop()
+    spark.stop()
     return score
 
 def get_spark_session(app_name):
