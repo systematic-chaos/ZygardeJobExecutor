@@ -21,9 +21,15 @@ from pyspark.sql import SparkSession
 from .s3_object_manager import upload_file
 from .functions.branin import branin_func as branin
 from .functions.linear_regression import linear_regression_func as linear_regression
+from .functions.random_forest_regression import random_forest_regression_func as random_forest_regression
+from .functions.naive_bayes import naive_bayes_func as naive_bayes
+from .functions.gaussian_mixture_model import gaussian_mixture_model_func as gaussian_mixture_model
 
 algorithm_modules = { 'branin': branin,
-                    'linear-regression': linear_regression }
+                    'linear-regression': linear_regression,
+                    'random-forest-regression': random_forest_regression,
+                    'naive-bayes': naive_bayes,
+                    'gaussian-mixture-model': gaussian_mixture_model }
 
 def perform_training(runargs):
     app_name, algorithm, data_source, func_params = get_command_line_args(runargs)
@@ -33,7 +39,7 @@ def perform_training(runargs):
     spark = get_spark_session(app_name)
     data = load_s3_dataset(spark, data_source) if data_source else None
     #spark = None; data = None    # REMOVE ME
-    score, model = algorithm_modules[algorithm](spark, func_params, data)
+    (score, model) = algorithm_modules[algorithm](spark, func_params, data)
 
     #upload_model_s3(model, app_name, algorithm, score, func_params)
 
@@ -42,9 +48,10 @@ def perform_training(runargs):
 
 def get_spark_session(app_name):
     spark = SparkSession.builder.master('local').appName(app_name).getOrCreate()
-    spark.sparkContext.setLogLevel('ERROR')
+    spark.sparkContext.setLogLevel('WARN')
     return spark
 
+# Load and parse the data file, converting it to a DataFrame
 def load_s3_dataset(spark, data_source, num_features=None):
     df_reader = spark.read
     if 'format' in data_source:

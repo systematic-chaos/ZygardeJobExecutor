@@ -1,0 +1,28 @@
+{
+	"domain": "classification",
+	"methods": [
+		{
+			"algorithm": "naive-bayes",
+			"hyperparameters": [
+				{
+					"param": "modelType",
+					"values": ["multinomial"]
+				},
+				{
+					"param": "smoothing",
+					"values": [1.0]
+				}
+			]
+		}
+	],
+	"dataset": {
+		"path": "/home/thanatos/workspace/JobExecutor/smac/data/mllib/sample_libsvm_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
+	"computationalResources": {
+		"minTotalInstances": 1,
+		"maxTotalInstances": 1
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}

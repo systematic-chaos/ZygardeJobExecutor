@@ -1,0 +1,32 @@
+{
+	"domain": "regression",
+	"methods": [
+		{
+			"algorithm": "random-forest-regression",
+			"hyperparameters": [
+				{
+					"param": "numTrees",
+					"values": [2, 20]
+				},
+				{
+					"param": "maxDepth",
+					"values": [2, 5]
+				},
+				{
+					"param": "seed",
+					"values": [42]
+				}
+			]
+		}
+	],
+	"dataset": {
+		"path": "/home/thanatos/workspace/JobExecutor/smac/data/mllib/sample_libsvm_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
+	"computationalResources": {
+		"minTotalInstances": 1,
+		"maxTotalInstances": 1
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}
