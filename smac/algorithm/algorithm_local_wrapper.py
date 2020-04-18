@@ -13,6 +13,8 @@ Polytechnic University of Valencia
 @contact:   fjfernandezbravo@iti.es
 '''
 
+import numpy as np
+
 from os import remove as remove_file
 from shutil import rmtree as remove_dir
 from uuid import uuid4 as uuid
@@ -24,12 +26,14 @@ from .functions.linear_regression import linear_regression_func as linear_regres
 from .functions.random_forest_regression import random_forest_regression_func as random_forest_regression
 from .functions.naive_bayes import naive_bayes_func as naive_bayes
 from .functions.gaussian_mixture_model import gaussian_mixture_model_func as gaussian_mixture_model
+from .functions.k_means import k_means_func as k_means
 
 algorithm_modules = { 'branin': branin,
                     'linear-regression': linear_regression,
                     'random-forest-regression': random_forest_regression,
                     'naive-bayes': naive_bayes,
-                    'gaussian-mixture-model': gaussian_mixture_model }
+                    'gaussian-mixture-model': gaussian_mixture_model,
+                    'k-means': k_means }
 
 def perform_training(runargs):
     app_name, algorithm, data_source, func_params = get_command_line_args(runargs)
@@ -53,13 +57,14 @@ def get_spark_session(app_name):
 
 # Load and parse the data file, converting it to a DataFrame
 def load_s3_dataset(spark, data_source, num_features=None):
-    df_reader = spark.read
     if 'format' in data_source:
-        df_reader = df_reader.format(data_source['format'])
-    if num_features:
-        dataset = df_reader.load(data_source['path'], numFeatures=num_features)
+        df_reader = spark.read.format(data_source['format'])
+        if num_features:
+            dataset = df_reader.load(data_source['path'], numFeatures=num_features)
+        else:
+            dataset = df_reader.load(data_source['path'])
     else:
-        dataset = df_reader.load(data_source['path'])
+        dataset = spark.textFile(data_source['path']).map(lambda line: np.array([float(x) for x in line.split(' ')]))
     return dataset
 
 def upload_model_s3(model, request_id, algorithm, precision, hyperparams):

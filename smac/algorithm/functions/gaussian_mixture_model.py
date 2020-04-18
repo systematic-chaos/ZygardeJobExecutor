@@ -15,6 +15,7 @@ Polytechnic University of Valencia
 '''
 
 from pyspark.ml.clustering import GaussianMixture
+from pyspark.ml.evaluation import ClusteringEvaluator
 
 hyperparameters_default_values = {
     'k': 2,
@@ -26,21 +27,31 @@ hyperparameters_default_values = {
 }
 
 def gaussian_mixture_model(spark, data, hyperparameters):
-    gmm = GaussianMixture(k=hyperparameters_default_values['k'],
-                        tol=hyperparameters_default_values['tol'],
-                        maxIter=hyperparameters_default_values['maxIter'],
-                        featuresCol=hyperparameters_default_values['featuresCol'],
-                        predictionCol=hyperparameters_default_values['predictionCol'])
 
-    model = gmm.fit(data)
+    # Trains a GMM model
+    gmm = GaussianMixture(k=hyperparameters['k'],
+                        tol=hyperparameters['tol'],
+                        maxIter=hyperparameters['maxIter'],
+                        featuresCol=hyperparameters['featuresCol'],
+                        predictionCol=hyperparameters['predictionCol'])
+    gmm_model = gmm.fit(data)
 
-    return model.summary.logLikelihood, model
+    # Make predictions
+    predictions = gmm_model.transform(data)
+
+    # Evaluate clustering by computing Silhouette score with squared euclidean distance
+    evaluator = ClusteringEvaluator(metricName='silhouette', distanceMeasure='squaredEuclidean',
+                                    featuresCol=hyperparameters['featuresCol'],
+                                    predictionCol=hyperparameters['predictionCol'])
+    silhouette = evaluator.evaluate(predictions)
+
+    return silhouette, gmm_model
 
 def gaussian_mixture_model_func(spark, params={}, data=None):
     hyperparams = hyperparameters_values(params)
 
     (score, model) = gaussian_mixture_model(spark, data, hyperparams)
-    return abs(score), model
+    return score, model
 
 def hyperparameters_values(params):
     hyperparameters = hyperparameters_default_values.copy()
