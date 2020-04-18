@@ -15,25 +15,32 @@ Polytechnic University of Valencia
 
 import numpy as np
 
+from pyspark.sql import SparkSession
 from os import remove as remove_file
 from shutil import rmtree as remove_dir
 from uuid import uuid4 as uuid
-from pyspark.sql import SparkSession
 
 from .s3_object_manager import upload_file
+from .aux_functions import merge_dictionaries, cast_argument
 from .functions.branin import branin_func as branin
 from .functions.linear_regression import linear_regression_func as linear_regression
 from .functions.random_forest_regression import random_forest_regression_func as random_forest_regression
 from .functions.naive_bayes import naive_bayes_func as naive_bayes
-from .functions.gaussian_mixture_model import gaussian_mixture_model_func as gaussian_mixture_model
+from .functions.linear_support_vector_machine import linear_support_vector_machine_func as lsvm
 from .functions.k_means import k_means_func as k_means
+from .functions.gaussian_mixture_model import gaussian_mixture_model_func as gmm
+from .functions.multilayer_perceptron_classifier import multilayer_perceptron_classifier_func as mlpc
 
-algorithm_modules = { 'branin': branin,
-                    'linear-regression': linear_regression,
-                    'random-forest-regression': random_forest_regression,
-                    'naive-bayes': naive_bayes,
-                    'gaussian-mixture-model': gaussian_mixture_model,
-                    'k-means': k_means }
+misc_functions = { 'branin': branin }
+regression = { 'linear-regression': linear_regression,
+                'random-forest-regression': random_forest_regression }
+classification = { 'naive_bayes': naive_bayes,
+                    'linear-support-vector-machine': lsvm,
+                    'multilayer-perceptron-classifier': mlpc }
+clustering = { 'k-means': k_means,
+                'gaussian-mixture-model': gmm }
+
+algorithm_modules = merge_dictionaries([misc_functions, regression, classification, clustering])
 
 def perform_training(runargs):
     app_name, algorithm, data_source, func_params = get_command_line_args(runargs)
@@ -135,24 +142,4 @@ def compose_model_path(request_id, precision, algorithm):
 def compose_temp_path(request_id, precision, algorithm):
     return "%s/%s-%.4f-%s" % ("/tmp", request_id, precision, algorithm)
 
-def cast_argument(value):
-    if is_int(value):
-        return int(value)
-    elif is_float(value):
-        return float(value)
-    else:
-        return str(value)
 
-def is_int(value):
-    try:
-        int(value)
-        return True
-    except ValueError:
-        return False
-
-def is_float(value):
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False

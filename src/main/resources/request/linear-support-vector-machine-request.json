@@ -1,0 +1,28 @@
+{
+	"domain": "classification",
+	"methods": [
+		{
+			"algorithm": "linear-support-vector-machine",
+			"hyperparameters": [
+				{
+					"param": "maxIter",
+					"values": [5, 10, 100]
+				},
+				{
+					"param": "regParam",
+					"values": [0.0, 0.01, 0.1]
+				}
+			]
+		}
+	],
+	"dataset": {
+		"path": "/home/thanatos/workspace/JobExecutor/smac/data/mllib/sample_libsvm_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
+	"computationalResources": {
+		"minTotalInstances": 1,
+		"maxTotalInstances": 1
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}

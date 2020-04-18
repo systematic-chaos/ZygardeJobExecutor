@@ -58,8 +58,9 @@ def random_forest_regression(spark, data, hyperparameters):
     predictions = model.transform(test_data)
 
     # Select (prediction, true label) and compute test error
-    evaluator = RegressionEvaluator(labelCol=hyperparameters['labelCol'],\
-        predictionCol=hyperparameters['predictionCol'], metricName='rmse')
+    evaluator = RegressionEvaluator(metricName='rmse',
+                                    labelCol=hyperparameters['labelCol'],
+                                    predictionCol=hyperparameters['predictionCol'])
     rmse = evaluator.evaluate(predictions)
 
     rf_model = model.stages[1]

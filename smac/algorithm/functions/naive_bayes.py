@@ -22,6 +22,7 @@ from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 hyperparameters_default_values = {
     'smoothing': 1.0,
     'modelType': 'multinomial',
+    'featuresCol': 'features',
     'labelCol': 'label',
     'predictionCol': 'prediction'
 }
@@ -29,22 +30,20 @@ hyperparameters_default_values = {
 def naive_bayes(spark, data, hyperparameters):
     
     # Split the data into train and test
-    (train, test) = data.randomSplit([0.6, 0.4])
+    (training_data, test_data) = data.randomSplit([0.8, 0.2])
 
     # Create the trainer and set its parameters
     nb = NaiveBayes(modelType=hyperparameters['modelType'],
                     smoothing=hyperparameters['smoothing'])
     
     # Train the model
-    nb_model = nb.fit(train)
+    nb_model = nb.fit(training_data)
 
     # Make predictions
-    predictions = nb_model.transform(test)
+    predictions = nb_model.transform(test_data)
 
-    # Compute accuracy on the test set
-    evaluator = MulticlassClassificationEvaluator(metricName='f1',
-                                                labelCol=hyperparameters['labelCol'],
-                                                predictionCol=hyperparameters['predictionCol'])
+    # Compute F1 score on the test set
+    evaluator = MulticlassClassificationEvaluator(metricName='f1')
     f1_score = evaluator.evaluate(predictions)
 
     return f1_score, nb_model

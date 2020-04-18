@@ -13,8 +13,7 @@ Polytechnic University of Valencia
 '''
 
 from pyspark.ml.regression import LinearRegression
-from pyspark import SparkContext, SparkConf
-from pyspark.sql import SparkSession
+from pyspark.ml.evaluation import RegressionEvaluator
 
 hyperparameters_default_values = {
     'maxIter': 100,
@@ -37,9 +36,21 @@ def linear_regression(spark, data, hyperparameters):
         featuresCol=hyperparameters['featuresCol'],
         labelCol=hyperparameters['labelCol'],
         predictionCol=hyperparameters['predictionCol'])
+    
+    # Split the data into training and test sets (30% held for testing)
+    (training_data, test_data) = data.randomSplit([0.7, 0.3])
 
     # Fit the model from training data
-    lr_model = lr.fit(data)
+    lr_model = lr.fit(training_data)
+
+    # Make predictions
+    predictions = lr_model.transform(test_data)
+
+    # Select (prediction, true label) and compute test error
+    evaluator = RegressionEvaluator(metricName='rmse',
+                                    labelCol=hyperparameters['labelCol'],
+                                    predictionCol=hyperparameters['predictionCol'])
+    rmse = evaluator.evaluate(predictions)
 
     return lr_model.summary.rootMeanSquaredError, lr_model
 
