@@ -1,5 +1,5 @@
 '''
-algorithm/random_forest_regression -- Random forest regression.
+algorithm/random_forest_regression -- Random forest regression
 Random forests are a popular family of classification and regression methods.
 Random forests are ensembles of decision trees. Random forests combine many decision trees
 for binary and multiclass classification and for regression, using both continuous and
@@ -23,7 +23,6 @@ from pyspark.ml.evaluation import RegressionEvaluator
 hyperparameters_default_values = {
     'numTrees': 20,
     'maxDepth': 5,
-    'seed': None,
     'maxCategories': 4,
     'featuresCol': 'features',
     'labelCol': 'label',
@@ -44,9 +43,7 @@ def random_forest_regression(spark, data, hyperparameters):
     # Train a RandomForest model
     rf = RandomForestRegressor(numTrees=hyperparameters['numTrees'],
         maxDepth=hyperparameters['maxDepth'],
-        seed=hyperparameters['seed'],
-        labelCol=hyperparameters['labelCol'],
-        featuresCol=hyperparameters['featuresCol'])
+        labelCol=hyperparameters['labelCol'], featuresCol=hyperparameters['featuresCol'])
     
     # Chain vector indexer and random forest regression in a Pipeline
     pipeline = Pipeline(stages=[feature_indexer, rf])
@@ -57,7 +54,7 @@ def random_forest_regression(spark, data, hyperparameters):
     # Make predictions
     predictions = model.transform(test_data)
 
-    # Select (prediction, true label) and compute test error
+    # Select and compute test error
     evaluator = RegressionEvaluator(metricName='rmse',
                                     labelCol=hyperparameters['labelCol'],
                                     predictionCol=hyperparameters['predictionCol'])

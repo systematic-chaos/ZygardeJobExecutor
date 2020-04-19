@@ -1,0 +1,32 @@
+{
+	"domain": "classification",
+	"methods": [
+		{
+			"algorithm": "binomial-logistic-regression",
+			"hyperparameters": [
+				{
+					"param": "maxIter",
+					"values": [10, 100]
+				},
+				{
+					"param": "regParam",
+					"values": [0.0, 0.01, 0.3]
+				},
+				{
+					"param": "elasticNetParam",
+					"values": [0.0, 0.8]
+				}
+			]
+		}
+	],
+	"dataset": {
+		"path": "/home/thanatos/workspace/JobExecutor/smac/data/mllib/sample_libsvm_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
+	"computationalResources": {
+		"minTotalInstances": 1,
+		"maxTotalInstances": 1
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}

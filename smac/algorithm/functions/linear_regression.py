@@ -23,8 +23,7 @@ hyperparameters_default_values = {
     'loss': 'squaredError',
     'featuresCol': 'features',
     'labelCol': 'label',
-    'predictionCol': 'prediction',
-    'weightCol': None
+    'predictionCol': 'prediction'
 }
 
 def linear_regression(spark, data, hyperparameters):
@@ -46,19 +45,19 @@ def linear_regression(spark, data, hyperparameters):
     # Make predictions
     predictions = lr_model.transform(test_data)
 
-    # Select (prediction, true label) and compute test error
+    # Select and compute test error
     evaluator = RegressionEvaluator(metricName='rmse',
                                     labelCol=hyperparameters['labelCol'],
                                     predictionCol=hyperparameters['predictionCol'])
     rmse = evaluator.evaluate(predictions)
 
-    return lr_model.summary.rootMeanSquaredError, lr_model
+    return rmse, lr_model
 
 def linear_regression_func(spark, params={}, data=None):
     hyperparams = hyperparameters_values(params)
     
-    (rmse, model) = linear_regression(spark, data, hyperparams)
-    return -rmse, model
+    (rmse_score, model) = linear_regression(spark, data, hyperparams)
+    return -rmse_score, model
 
 def hyperparameters_values(params):
     hyperparameters = hyperparameters_default_values.copy()

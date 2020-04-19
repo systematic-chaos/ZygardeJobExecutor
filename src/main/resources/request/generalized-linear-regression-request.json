@@ -1,0 +1,36 @@
+{
+	"domain": "regression",
+	"methods": [
+		{
+			"algorithm": "generalized-linear-regression",
+			"hyperparameters": [
+				{
+					"param": "maxIter",
+					"values": [10, 25, 50, 100]
+				},
+				{
+					"param": "regParam",
+					"values": [0.0, 0.3]
+				},
+				{
+					"param": "family",
+					"values": ["gaussian", "binomial", "poisson", "gamma"]
+				},
+				{
+					"param": "link",
+					"values": ["identity", "log", "inverse", "logit", "probit", "cloglog", "sqrt"]
+				}
+			]
+		}
+	],
+	"dataset": {
+		"path": "/home/thanatos/workspace/JobExecutor/smac/data/mllib/sample_linear_regression_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
+	"computationalResources": {
+		"minTotalInstances": 1,
+		"maxTotalInstances": 1
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}
