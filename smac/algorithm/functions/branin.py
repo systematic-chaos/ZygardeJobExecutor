@@ -23,7 +23,7 @@ def branin(x1, x2,
             t = 1 / (8 * math.pi)):
     return a * (x2 - b * x1 * x1 + c * x1 - r) ** 2 + s * (1 - t) * math.cos(x1) + s
 
-def branin_func(spark, params={}, data=None):
+def branin_func(params={}, data=None):
     if all(var in params for var in ['x1', 'x2']):
         x1 = params['x1']
         x2 = params['x2']
@@ -31,6 +31,6 @@ def branin_func(spark, params={}, data=None):
             yValue = branin(x1, x2, params['a'], params['b'], params['c'], params['r'], params['s'], params['t'])
         else:
             yValue = branin(x1, x2)
-        return -yValue, None
+        return -yValue
     else:
         raise ValueError('x1 and x2 input variable arguments were no provided')

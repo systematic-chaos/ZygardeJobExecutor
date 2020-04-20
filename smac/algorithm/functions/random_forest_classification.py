@@ -1,5 +1,5 @@
 '''
-algorithm/random_forest_classification -- Random forest classification
+algorithm/functions/random_forest_classification -- Random forest classification
 Random forests are a popular family of classification and regression methods.
 Random forests are ensembles of decision trees. They combine many decision trees
 for binary and multiclass classification and for regression, using both continuous
@@ -41,8 +41,9 @@ def random_forest_classification(spark, data, hyperparameters):
     
     # Automatically identify categorical features, and index them.
     # Set maxCategories so features with > 4 distinct values are treated as continuous.
-    feature_indexer = VectorIndexer(inputCol=hyperparameters['featuresCol'], outputCol='indexedFeatures',
-                                    maxCategories=hyperparameters['maxCategories']).fit(data)
+    feature_indexer = VectorIndexer(maxCategories=hyperparameters['maxCategories'],
+                                    inputCol=hyperparameters['featuresCol'],
+                                    outputCol='indexedFeatures').fit(data)
     hyperparameters['featuresCol'] = 'indexedFeatures'
 
     # Split the data into training and test sets (30 % held out for testing)

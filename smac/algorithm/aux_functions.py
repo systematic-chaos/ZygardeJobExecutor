@@ -17,7 +17,7 @@ def merge_dictionaries(d):
     elif len(d) == 2:
         return {**d[1], **d[0]}
     else:
-        return d[0]
+        return d
 
 def cast_argument(value):
     if is_int(value):

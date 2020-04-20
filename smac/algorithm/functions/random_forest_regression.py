@@ -1,5 +1,5 @@
 '''
-algorithm/random_forest_regression -- Random forest regression
+algorithm/functions/random_forest_regression -- Random forest regression
 Random forests are a popular family of classification and regression methods.
 Random forests are ensembles of decision trees. Random forests combine many decision trees
 for binary and multiclass classification and for regression, using both continuous and
@@ -33,8 +33,9 @@ def random_forest_regression(spark, data, hyperparameters):
     
     # Automatically identify categorical features, and index them.
     # Set maxCategories so features with > 4 distinct values are treated as continuous.
-    feature_indexer = VectorIndexer(inputCol=hyperparameters['featuresCol'],\
-        outputCol='indexedFeatures', maxCategories=hyperparameters['maxCategories']).fit(data)
+    feature_indexer = VectorIndexer(maxCategories=hyperparameters['maxCategories'],
+                                    inputCol=hyperparameters['featuresCol'],
+                                    outputCol='indexedFeatures', ).fit(data)
     hyperparameters['featuresCol'] = 'indexedFeatures'
     
     # Split the data into training and test sets (30% held out for testing)
@@ -42,8 +43,9 @@ def random_forest_regression(spark, data, hyperparameters):
 
     # Train a RandomForest model
     rf = RandomForestRegressor(numTrees=hyperparameters['numTrees'],
-        maxDepth=hyperparameters['maxDepth'],
-        labelCol=hyperparameters['labelCol'], featuresCol=hyperparameters['featuresCol'])
+                            maxDepth=hyperparameters['maxDepth'],
+                            labelCol=hyperparameters['labelCol'],
+                            featuresCol=hyperparameters['featuresCol'])
     
     # Chain vector indexer and random forest regression in a Pipeline
     pipeline = Pipeline(stages=[feature_indexer, rf])

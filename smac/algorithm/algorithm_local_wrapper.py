@@ -36,29 +36,52 @@ from .functions.random_forest_classification import random_forest_classification
 from .functions.generalized_linear_regression import generalized_linear_regression_func as glrm
 from .functions.binomial_logistic_regression import logistic_regression_func as binomial_logistic_regression
 from .functions.multinomial_logistic_regression import logistic_regression_func as multinomial_logistic_regression
+from .functions.decision_tree_classification import decision_tree_classification_func as decision_tree_classification
+from .functions.decision_tree_regression import decision_tree_regression_func as decision_tree_regression
+from .functions.gradient_boosted_tree_classification import gradient_boosted_tree_classification_func as gbt_classification
+from .functions.gradient_boosted_tree_regression import gradient_boosted_tree_regression_func as gbt_regression
 
 misc_functions = { 'branin': branin }
 regression = { 'linear-regression': linear_regression,
                 'generalized-linear-regression': glrm,
-                'random-forest-regression': random_forest_regression }
+                'random-forest-regression': random_forest_regression,
+                'decision-tree-regression': decision_tree_regression,
+                'gradient-boosted-tree-regression': gbt_regression }
 binomial_classification = { 'linear-support-vector-machine': lsvm,
                             'binomial-logistic-regression': binomial_logistic_regression }
 multinomial_classification = { 'naive_bayes': naive_bayes,
                     'random-forest-classification': random_forest_classification,
-                    'multilayer-perceptron-classifier': mlpc,
-                    'multinomial-logistic-regression': multinomial_logistic_regression }
+                    'multinomial-logistic-regression': multinomial_logistic_regression,
+                    'decision-tree-classification': decision_tree_classification,
+                    'gradient-boosted-tree-classification': gbt_classification }
 clustering = { 'k-means': k_means,
                 'gaussian-mixture-model': gmm,
                 'latent-dirichlet-allocation': lda }
+deep_learning = { 'multilayer-perceptron-classification': mlpc }
 classification = merge_dictionaries([multinomial_classification, binomial_classification])
 
-algorithm_modules = merge_dictionaries([misc_functions, regression, classification, clustering])
+algorithm_modules = merge_dictionaries([regression, classification, clustering, deep_learning])
+algorithm_platform = { 'standalone': [*misc_functions],
+                        'spark': [*merge_dictionaries([regression, classification, clustering, deep_learning])],
+                        'horovod': []} 
 
 def perform_training(runargs):
     app_name, algorithm, data_source, func_params = get_command_line_args(runargs)
     if algorithm not in algorithm_modules:
         raise ValueError("algorithm function %s does not exist" % algorithm)
 
+    if algorithm in algorithm_platform['standalone']:
+        return perform_standalone_training(algorithm, func_params, data_source)
+    elif algorithm in algorithm_platform['spark']:
+        return perform_spark_training(algorithm, func_params, data_source, app_name)
+    elif algorithm in algorithm_platform['horovod']:
+        pass
+
+def perform_standalone_training(algorithm, func_params, data_source=None):
+    score = algorithm_modules[algorithm](func_params, data_source)
+    return score
+
+def perform_spark_training(algorithm, func_params, data_source, app_name):
     spark = get_spark_session(app_name)
     data = load_s3_dataset(spark, data_source) if data_source else None
     #spark = None; data = None    # REMOVE ME
