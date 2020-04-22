@@ -18,7 +18,7 @@ from pyspark.ml.regression import DecisionTreeRegressor
 from pyspark.ml.feature import VectorIndexer
 from pyspark.ml.evaluation import RegressionEvaluator
 
-from ..aux_functions import hyperparameters_values
+from ...aux_functions import hyperparameters_values
 
 hyperparameters_default_values = {
     'maxDepth': 5,
