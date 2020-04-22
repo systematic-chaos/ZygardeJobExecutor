@@ -16,8 +16,8 @@ Polytechnic University of Valencia
 
 from pyspark.ml.classification import LogisticRegression
 
-from ..aux_functions import hyperparameters_values
-from ..evaluation import mcc, confusion_matrix_rates as confusion_matrix
+from ....aux_functions import hyperparameters_values
+from ....evaluation import mcc, confusion_matrix_rates as confusion_matrix
 
 hyperparameters_default_values = {
     'maxIter': 100,
