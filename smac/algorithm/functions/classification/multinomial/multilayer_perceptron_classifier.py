@@ -25,7 +25,7 @@ Polytechnic University of Valencia
 from pyspark.ml.classification import MultilayerPerceptronClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
-from ..aux_functions import hyperparameters_values
+from ....aux_functions import hyperparameters_values
 
 hyperparameters_default_values = {
     'maxIter': 100,
