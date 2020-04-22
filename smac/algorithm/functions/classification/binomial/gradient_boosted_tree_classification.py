@@ -19,8 +19,8 @@ from pyspark.ml import Pipeline
 from pyspark.ml.classification import GBTClassifier
 from pyspark.ml.feature import StringIndexer, VectorIndexer
 
-from ..aux_functions import hyperparameters_values
-from ..evaluation import mcc, confusion_matrix_rates as confusion_matrix
+from ....aux_functions import hyperparameters_values
+from ....evaluation import mcc, confusion_matrix_rates as confusion_matrix
 
 hyperparameters_default_values = {
     'maxIter': 20,
