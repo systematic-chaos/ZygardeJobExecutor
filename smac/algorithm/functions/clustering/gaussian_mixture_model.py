@@ -18,7 +18,7 @@ Polytechnic University of Valencia
 from pyspark.ml.clustering import GaussianMixture
 from pyspark.ml.evaluation import ClusteringEvaluator
 
-from ..aux_functions import hyperparameters_values
+from ...aux_functions import hyperparameters_values
 
 hyperparameters_default_values = {
     'k': 2,
