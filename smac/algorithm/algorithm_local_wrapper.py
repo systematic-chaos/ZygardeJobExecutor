@@ -23,23 +23,24 @@ from uuid import uuid4 as uuid
 from .s3_object_manager import upload_file
 from .aux_functions import merge_dictionaries, cast_argument
 
-from .functions.branin import branin_func as branin
-from .functions.linear_regression import linear_regression_func as linear_regression
-from .functions.random_forest_regression import random_forest_regression_func as random_forest_regression
-from .functions.naive_bayes import naive_bayes_func as naive_bayes
-from .functions.linear_support_vector_machine import linear_support_vector_machine_func as lsvm
-from .functions.k_means import k_means_func as k_means
-from .functions.gaussian_mixture_model import gaussian_mixture_model_func as gmm
-from .functions.multilayer_perceptron_classifier import multilayer_perceptron_classifier_func as mlpc
-from .functions.latent_dirichlet_allocation import latent_dirichlet_allocation_func as lda
-from .functions.random_forest_classification import random_forest_classification_func as random_forest_classification
-from .functions.generalized_linear_regression import generalized_linear_regression_func as glrm
-from .functions.binomial_logistic_regression import logistic_regression_func as binomial_logistic_regression
-from .functions.multinomial_logistic_regression import logistic_regression_func as multinomial_logistic_regression
-from .functions.decision_tree_classification import decision_tree_classification_func as decision_tree_classification
-from .functions.decision_tree_regression import decision_tree_regression_func as decision_tree_regression
-from .functions.gradient_boosted_tree_classification import gradient_boosted_tree_classification_func as gbt_classification
-from .functions.gradient_boosted_tree_regression import gradient_boosted_tree_regression_func as gbt_regression
+from .functions import branin
+from .functions import linear_regression
+from .functions import random_forest_regression
+from .functions import random_forest_regression
+from .functions import naive_bayes
+from .functions import linear_support_vector_machine as lsvm
+from .functions import k_means
+from .functions import gaussian_mixture_model as gmm
+from .functions import multilayer_perceptron_classifier as mlpc
+from .functions import latent_dirichlet_allocation as lda
+from .functions import random_forest_classification
+from .functions import generalized_linear_regression as glrm
+from .functions import binomial_logistic_regression
+from .functions import multinomial_logistic_regression
+from .functions import decision_tree_classification
+from .functions import decision_tree_regression
+from .functions import gradient_boosted_tree_classification as gbt_classification
+from .functions import gradient_boosted_tree_regression as gbt_regression
 
 misc_functions = { 'branin': branin }
 regression = { 'linear-regression': linear_regression,
@@ -49,7 +50,7 @@ regression = { 'linear-regression': linear_regression,
                 'gradient-boosted-tree-regression': gbt_regression }
 binomial_classification = { 'linear-support-vector-machine': lsvm,
                             'binomial-logistic-regression': binomial_logistic_regression }
-multinomial_classification = { 'naive_bayes': naive_bayes,
+multinomial_classification = { 'naive-bayes': naive_bayes,
                     'random-forest-classification': random_forest_classification,
                     'multinomial-logistic-regression': multinomial_logistic_regression,
                     'decision-tree-classification': decision_tree_classification,
@@ -60,7 +61,7 @@ clustering = { 'k-means': k_means,
 deep_learning = { 'multilayer-perceptron-classification': mlpc }
 classification = merge_dictionaries([multinomial_classification, binomial_classification])
 
-algorithm_modules = merge_dictionaries([regression, classification, clustering, deep_learning])
+algorithm_modules = merge_dictionaries([regression, classification, clustering, deep_learning, misc_functions])
 algorithm_platform = { 'standalone': [*misc_functions],
                         'spark': [*merge_dictionaries([regression, classification, clustering, deep_learning])],
                         'horovod': []} 
@@ -176,5 +177,3 @@ def compose_model_path(request_id, precision, algorithm):
 
 def compose_temp_path(request_id, precision, algorithm):
     return "%s/%s-%.4f-%s" % ("/tmp", request_id, precision, algorithm)
-
-
