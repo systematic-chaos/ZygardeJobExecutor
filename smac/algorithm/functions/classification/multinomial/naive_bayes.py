@@ -21,7 +21,7 @@ Polytechnic University of Valencia
 from pyspark.ml.classification import NaiveBayes
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
-from ..aux_functions import hyperparameters_values
+from ....aux_functions import hyperparameters_values
 
 hyperparameters_default_values = {
     'smoothing': 1.0,
