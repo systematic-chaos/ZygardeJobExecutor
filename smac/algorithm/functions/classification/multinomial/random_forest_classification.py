@@ -21,7 +21,7 @@ from pyspark.ml.classification import RandomForestClassifier
 from pyspark.ml.feature import IndexToString, StringIndexer, VectorIndexer
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
-from ..aux_functions import hyperparameters_values
+from ....aux_functions import hyperparameters_values
 
 hyperparameters_default_values = {
     'numTrees': 20,
