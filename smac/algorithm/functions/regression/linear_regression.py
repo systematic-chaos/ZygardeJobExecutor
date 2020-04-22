@@ -16,7 +16,7 @@ Polytechnic University of Valencia
 from pyspark.ml.regression import LinearRegression
 from pyspark.ml.evaluation import RegressionEvaluator
 
-from ..aux_functions import hyperparameters_values
+from ...aux_functions import hyperparameters_values
 
 hyperparameters_default_values = {
     'maxIter': 100,
