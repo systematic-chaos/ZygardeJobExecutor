@@ -17,6 +17,7 @@ import numpy as np
 
 from pyspark.sql import SparkSession
 from os import remove as remove_file
+from random import randint
 from shutil import rmtree as remove_dir
 from uuid import uuid4 as uuid
 
@@ -94,6 +95,7 @@ def perform_spark_training(algorithm, func_params, data_source, app_name):
     return score
 
 def get_spark_session(app_name):
+    spark_session_id = "%s_%d" % (app_name, randint(0, 1048575))
     spark = SparkSession.builder.master('local').appName(app_name).getOrCreate()
     spark.sparkContext.setLogLevel('WARN')
     return spark
