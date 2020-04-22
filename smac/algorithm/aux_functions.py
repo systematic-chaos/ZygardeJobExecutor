@@ -17,7 +17,20 @@ def merge_dictionaries(d):
     elif len(d) == 2:
         return {**d[1], **d[0]}
     else:
-        return d
+        return d[0]
+
+hyperparameters_default_values = {
+    'featuresCol': 'features',
+    'labelCol': 'label',
+    'predictionCol': 'prediction'
+}
+
+def hyperparameters_values(params, default_params):
+    hyperparameters = merge_dictionaries([default_params, hyperparameters_default_values.copy()])
+    for k, v in params.items():
+        if k in hyperparameters:
+            hyperparameters[k] = v
+    return hyperparameters
 
 def cast_argument(value):
     if is_int(value):

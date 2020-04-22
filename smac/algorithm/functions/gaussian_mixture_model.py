@@ -1,5 +1,6 @@
 '''
-algorithm/functions/gaussian_mixture_model -- Gaussian Mixture Model (GMM)
+gaussian_mixture_model -- Clustering: Gaussian Mixture Model (GMM)
+
 A Gaussian Mixture Model represents a composite distribution whereby points are drawn fron one of k
 Gaussian sub-distributions, each with its own probability. This implementation uses the expectation-
 maximization algorithm to induce the maximum-likelihood model given a set of samples.
@@ -17,13 +18,12 @@ Polytechnic University of Valencia
 from pyspark.ml.clustering import GaussianMixture
 from pyspark.ml.evaluation import ClusteringEvaluator
 
+from ..aux_functions import hyperparameters_values
+
 hyperparameters_default_values = {
     'k': 2,
     'tol': 0.001,
-    'maxIter': 100,
-    'featuresCol': 'features',
-    'predictionCol': 'prediction',
-    'probabilityCol': 'probability'
+    'maxIter': 100
 }
 
 def gaussian_mixture_model(spark, data, hyperparameters):
@@ -43,19 +43,12 @@ def gaussian_mixture_model(spark, data, hyperparameters):
     evaluator = ClusteringEvaluator(metricName='silhouette', distanceMeasure='squaredEuclidean',
                                     featuresCol=hyperparameters['featuresCol'],
                                     predictionCol=hyperparameters['predictionCol'])
-    silhouette = evaluator.evaluate(predictions)
+    silhouette_score = evaluator.evaluate(predictions)
 
-    return silhouette, gmm_model
+    return silhouette_score, gmm_model
 
 def gaussian_mixture_model_func(spark, params={}, data=None):
-    hyperparams = hyperparameters_values(params)
+    hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = gaussian_mixture_model(spark, data, hyperparams)
     return score, model
-
-def hyperparameters_values(params):
-    hyperparameters = hyperparameters_default_values.copy()
-    for k, v in params.items():
-        if k in hyperparameters:
-            hyperparameters[k] = v
-    return hyperparameters

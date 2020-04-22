@@ -1,6 +1,5 @@
 '''
-algorithm/functions/branin
-Branin function computation
+algorithm/functions/branin -- Branin function computation
 
 Zygarde: Platform for reactive training of models in the cloud
 Master in Big Data Analytics

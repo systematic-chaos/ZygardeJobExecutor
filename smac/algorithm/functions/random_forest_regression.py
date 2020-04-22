@@ -1,5 +1,6 @@
 '''
-algorithm/functions/random_forest_regression -- Random forest regression
+random_forest_regression -- Random Forest regressor
+
 Random forests are a popular family of classification and regression methods.
 Random forests are ensembles of decision trees. Random forests combine many decision trees
 for binary and multiclass classification and for regression, using both continuous and
@@ -20,13 +21,12 @@ from pyspark.ml.regression import RandomForestRegressor
 from pyspark.ml.feature import VectorIndexer
 from pyspark.ml.evaluation import RegressionEvaluator
 
+from ..aux_functions import hyperparameters_values
+
 hyperparameters_default_values = {
     'numTrees': 20,
     'maxDepth': 5,
-    'maxCategories': 4,
-    'featuresCol': 'features',
-    'labelCol': 'label',
-    'predictionCol': 'prediction'
+    'maxCategories': 4
 }
 
 def random_forest_regression(spark, data, hyperparameters):
@@ -38,8 +38,8 @@ def random_forest_regression(spark, data, hyperparameters):
                                     outputCol='indexedFeatures', ).fit(data)
     hyperparameters['featuresCol'] = 'indexedFeatures'
     
-    # Split the data into training and test sets (30% held out for testing)
-    (training_data, test_data) = data.randomSplit([0.7, 0.3])
+    # Split the data into training and test sets
+    (training_data, test_data) = data.randomSplit((0.7, 0.3))
 
     # Train a RandomForest model
     rf = RandomForestRegressor(numTrees=hyperparameters['numTrees'],
@@ -51,29 +51,22 @@ def random_forest_regression(spark, data, hyperparameters):
     pipeline = Pipeline(stages=[feature_indexer, rf])
 
     # Train model; this also runs the indexer
-    model = pipeline.fit(training_data)
+    pipeline_model = pipeline.fit(training_data)
 
     # Make predictions
-    predictions = model.transform(test_data)
+    predictions = pipeline_model.transform(test_data)
 
     # Select and compute test error
     evaluator = RegressionEvaluator(metricName='rmse',
                                     labelCol=hyperparameters['labelCol'],
                                     predictionCol=hyperparameters['predictionCol'])
-    rmse = evaluator.evaluate(predictions)
+    rmse_score = evaluator.evaluate(predictions)
 
-    rf_model = model.stages[1]
-    return rmse, rf_model
+    rf_model = pipeline_model.stages[1]
+    return rmse_score, rf_model
 
 def random_forest_regression_func(spark, params={}, data=None):
-    hyperparams = hyperparameters_values(params)
+    hyperparams = hyperparameters_values(params, hyperparameters_default_values)
     
-    (rmse, model) = random_forest_regression(spark, data, hyperparams)
-    return -rmse, model
-
-def hyperparameters_values(params):
-    hyperparameters = hyperparameters_default_values.copy()
-    for k, v in params.items():
-        if k in hyperparameters:
-            hyperparameters[k] = v
-    return hyperparameters
+    (score, model) = random_forest_regression(spark, data, hyperparams)
+    return -score, model

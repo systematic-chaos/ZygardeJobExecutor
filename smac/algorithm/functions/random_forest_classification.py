@@ -1,5 +1,6 @@
 '''
-algorithm/functions/random_forest_classification -- Random forest classification
+random_forest_classification -- Multinomial classification: Random Forest classifier
+
 Random forests are a popular family of classification and regression methods.
 Random forests are ensembles of decision trees. They combine many decision trees
 for binary and multiclass classification and for regression, using both continuous
@@ -20,15 +21,12 @@ from pyspark.ml.classification import RandomForestClassifier
 from pyspark.ml.feature import IndexToString, StringIndexer, VectorIndexer
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
-from .random_forest_regression import hyperparameters_values
+from ..aux_functions import hyperparameters_values
 
 hyperparameters_default_values = {
     'numTrees': 20,
     'maxDepth': 5,
-    'maxCategories': 4,
-    'featuresCol': 'features',
-    'labelCol': 'label',
-    'predictionCol': 'prediction'
+    'maxCategories': 4
 }
 
 def random_forest_classification(spark, data, hyperparameters):
@@ -47,7 +45,7 @@ def random_forest_classification(spark, data, hyperparameters):
     hyperparameters['featuresCol'] = 'indexedFeatures'
 
     # Split the data into training and test sets (30 % held out for testing)
-    (training_data, test_data) = data.randomSplit([0.7, 0.3])
+    (training_data, test_data) = data.randomSplit((0.7, 0.3))
 
     # Train a RandomForest model
     rf = RandomForestClassifier(numTrees=hyperparameters['numTrees'],
@@ -56,30 +54,31 @@ def random_forest_classification(spark, data, hyperparameters):
                                 featuresCol=hyperparameters['featuresCol'])
     
     # Convert indexed labels back to original labels
-    label_converter = IndexToString(inputCol=hyperparameters['predictionCol'],
-                                    outputCol='predictedLabel', labels=label_indexer.labels)
+    label_converter = IndexToString(labels=label_indexer.labels,
+                                    inputCol=hyperparameters['predictionCol'],
+                                    outputCol='predictedLabel')
 
     # Chain indexers and random forest classification in a Pipeline
     pipeline = Pipeline(stages=[label_indexer, feature_indexer, rf, label_converter])
 
     # Train model; this also runs the indexers
-    model = pipeline.fit(training_data)
+    pipeline_model = pipeline.fit(training_data)
 
     # Make predictions
-    predictions = model.transform(test_data)
+    predictions = pipeline_model.transform(test_data)
 
-    # Select (prediction, true label) and compute test error
+    # Select and compute test error
     evaluator = MulticlassClassificationEvaluator(metricName='f1',
                     labelCol=hyperparameters['labelCol'],
                     predictionCol=hyperparameters['predictionCol'])
     f1_score = evaluator.evaluate(predictions)
 
-    rf_model = model.stages[2]
+    rf_model = pipeline_model.stages[2]
     return f1_score, rf_model
 
 
 def random_forest_classification_func(spark, params={}, data=None):
-    hyperparams = hyperparameters_values(params)
+    hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = random_forest_classification(spark, data, hyperparams)
     return score, model

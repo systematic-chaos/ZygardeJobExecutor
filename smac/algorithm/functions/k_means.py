@@ -1,5 +1,6 @@
 '''
-algorithm/functions/k-means
+k-means -- Clustering: K-means
+
 k-means is one of the most commonly used clustering algorithms that clusters the data points
 into a predefined number of clusters.
 Clustering ins an unsupervised learning problem whereby we aim to group subsets of entities
@@ -20,14 +21,14 @@ Polytechnic University of Valencia
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
 
+from ..aux_functions import hyperparameters_values
+
 hyperparameters_default_values = {
         'k': 2,
         'maxIter': 20,
         'initMode': 'k-means||',
         'initSteps': 2,
-        'tol': 0.0001,
-        'featuresCol': 'features',
-        'predictionCol': 'prediction'
+        'tol': 0.0001
 }
 
 def k_means(spark, data, hyperparameters):
@@ -49,19 +50,12 @@ def k_means(spark, data, hyperparameters):
     evaluator = ClusteringEvaluator(metricName='silhouette', distanceMeasure='squaredEuclidean',
                                     featuresCol=hyperparameters['featuresCol'],
                                     predictionCol=hyperparameters['predictionCol'])
-    silhouette = evaluator.evaluate(predictions)
+    silhouette_score = evaluator.evaluate(predictions)
     
-    return silhouette, km_model
+    return silhouette_score, km_model
 
 def k_means_func(spark, params={}, data=None):
-    hyperparams = hyperparameters_values(params)
+    hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = k_means(spark, data, hyperparams)
     return score, model
-
-def hyperparameters_values(params):
-    hyperparameters = hyperparameters_default_values.copy()
-    for k, v in params.items():
-        if k in hyperparameters:
-            hyperparameters[k] = v
-    return hyperparameters

@@ -1,5 +1,6 @@
 '''
-algorithm/functions/multilayer_perceptron_classifier
+multilayer_perceptron_classifier -- Multinomial classification: Multilayer Perceptron Classifier
+
 Classifier trainer based on the Multilayer Perceptron.
 Multilayer perceptron classifier (MLPC) is a classifier based on the feedforward
 artificial neural network. MLPC consists of multiple layers of nodes. Each layer
@@ -24,22 +25,21 @@ Polytechnic University of Valencia
 from pyspark.ml.classification import MultilayerPerceptronClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
+from ..aux_functions import hyperparameters_values
+
 hyperparameters_default_values = {
     'maxIter': 100,
     'blockSize': 128,
     'inputLayerWidth': 4,
     'numHiddenLayers': 3,
     'hiddenLayersWidth': 5,
-    'outputLayerWidth': 3,
-    'featuresCol': 'features',
-    'labelCol': 'label',
-    'predictionCol': 'prediction'
+    'outputLayerWidth': 3
 }
 
 def multilayer_perceptron_classifier(spark, data, hyperparameters):
     
     # Split the data into training and test sets
-    (training_data, test_data) = data.randomSplit([0.8, 0.2])
+    (training_data, test_data) = data.randomSplit((0.8, 0.2))
 
     # Specify layers for the neural network: input (features),
     # intermediate (hidden) and output (classes) layers
@@ -57,23 +57,16 @@ def multilayer_perceptron_classifier(spark, data, hyperparameters):
 
     # Make predictions
     predictions = mlpc_model.transform(test_data)\
-        .select(hyperparameters['predictionCol'], hyperparameters['labelCol'])
+                            .select(hyperparameters['predictionCol'], hyperparameters['labelCol'])
 
-    # Compute F1 score on the test ste
+    # Compute F1 score on the test set
     evaluator = MulticlassClassificationEvaluator(metricName='f1')
     f1_score = evaluator.evaluate(predictions)
 
     return f1_score, mlpc_model
 
 def multilayer_perceptron_classifier_func(spark, params={}, data=None):
-    hyperparams = hyperparameters_values(params)
+    hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = multilayer_perceptron_classifier(spark, data, hyperparams)
     return score, model
-
-def hyperparameters_values(params):
-    hyperparameters = hyperparameters_default_values.copy()
-    for k, v in params.items():
-        if k in hyperparameters:
-            hyperparameters[k] = v
-    return hyperparameters

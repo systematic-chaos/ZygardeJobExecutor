@@ -1,5 +1,6 @@
 '''
-algorithm/functions/multinomial_logistic_regression
+multinomial_logistic_regression -- Multinomial clasification: Logistic regressor
+
 Logistic regression is a popular method to predict a categorical response. It is a special case of
 Generalized Linear Models that predicts the probability of outcomes.
 
@@ -16,12 +17,18 @@ Polytechnic University of Valencia
 from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
-from .binomial_logistic_regression import hyperparameters_default_values, hyperparameters_values
+from ..aux_functions import hyperparameters_values
+
+hyperparameters_default_values = {
+    'maxIter': 100,
+    'regParam': 0.0,
+    'elasticNetParam': 0.0
+}
 
 def logistic_regression(spark, data, hyperparameters):
     
     # Split the data into training and test sets
-    (training_data, test_data) = data.randomSplit([0.75, 0.25])
+    (training_data, test_data) = data.randomSplit((0.75, 0.25))
 
     # Create the classifier and set its parameters
     lr = LogisticRegression(family='multinomial',
@@ -37,12 +44,12 @@ def logistic_regression(spark, data, hyperparameters):
 
     # Compute score for multinomial classification on the test set
     evaluator = MulticlassClassificationEvaluator(metricName='f1')
-    score = evaluator.evaluate(predictions)
+    f1_score = evaluator.evaluate(predictions)
 
-    return score, lr_model
+    return f1_score, lr_model
 
 def logistic_regression_func(spark, params={}, data=None):
-    hyperparams = hyperparameters_values(params)
+    hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
-    (f1_score, model) = logistic_regression(spark, data, hyperparams)
-    return f1_score, model
+    (score, model) = logistic_regression(spark, data, hyperparams)
+    return score, model
