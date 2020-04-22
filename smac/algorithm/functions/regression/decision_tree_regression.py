@@ -63,4 +63,4 @@ def decision_tree_regression_func(spark, params={}, data=None):
     hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = decision_tree_regression(spark, data, hyperparams)
-    return -score, model
+    return -abs(score), model
