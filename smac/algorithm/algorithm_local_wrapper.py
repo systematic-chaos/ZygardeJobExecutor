@@ -33,7 +33,6 @@ from .functions import linear_support_vector_machine as lsvm
 from .functions import k_means
 from .functions import gaussian_mixture_model as gmm
 from .functions import multilayer_perceptron_classifier as mlpc
-from .functions import latent_dirichlet_allocation as lda
 from .functions import random_forest_classification
 from .functions import generalized_linear_regression as glrm
 from .functions import binomial_logistic_regression
@@ -57,9 +56,8 @@ multinomial_classification = { 'naive-bayes': naive_bayes,
                     'decision-tree-classification': decision_tree_classification,
                     'gradient-boosted-tree-classification': gbt_classification }
 clustering = { 'k-means': k_means,
-                'gaussian-mixture-model': gmm,
-                'latent-dirichlet-allocation': lda }
-deep_learning = { 'multilayer-perceptron-classification': mlpc }
+                'gaussian-mixture-model': gmm }
+deep_learning = { 'multilayer-perceptron-classifier': mlpc }
 classification = merge_dictionaries([multinomial_classification, binomial_classification])
 
 algorithm_modules = merge_dictionaries([regression, classification, clustering, deep_learning, misc_functions])
@@ -77,7 +75,7 @@ def perform_training(runargs):
     elif algorithm in algorithm_platform['spark']:
         return perform_spark_training(algorithm, func_params, data_source, app_name)
     elif algorithm in algorithm_platform['horovod']:
-        pass
+        return float(0)
 
 def perform_standalone_training(algorithm, func_params, data_source=None):
     score = algorithm_modules[algorithm](func_params, data_source)
@@ -85,18 +83,20 @@ def perform_standalone_training(algorithm, func_params, data_source=None):
 
 def perform_spark_training(algorithm, func_params, data_source, app_name):
     spark = get_spark_session(app_name)
-    data = load_s3_dataset(spark, data_source) if data_source else None
-    #spark = None; data = None    # REMOVE ME
-    (score, model) = algorithm_modules[algorithm](spark, func_params, data)
 
-    #upload_model_s3(model, app_name, algorithm, score, func_params)
+    try:
+        data = load_s3_dataset(spark, data_source) if data_source else None
+        #spark = None; data = None    # REMOVE ME
+        (score, model) = algorithm_modules[algorithm](spark, func_params, data)
+        #upload_model_s3(model, app_name, algorithm, score, func_params)
+    finally:
+        spark.stop()
 
-    spark.stop()
     return score
 
 def get_spark_session(app_name):
     spark_session_id = "%s_%d" % (app_name, randint(0, 1048575))
-    spark = SparkSession.builder.master('local').appName(app_name).getOrCreate()
+    spark = SparkSession.builder.master('local').appName(spark_session_id).getOrCreate()
     spark.sparkContext.setLogLevel('WARN')
     return spark
 

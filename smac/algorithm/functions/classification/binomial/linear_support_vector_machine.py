@@ -52,4 +52,4 @@ def linear_support_vector_machine_func(spark, params={}, data=None):
     hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = linear_support_vector_machine(spark, data, hyperparams)
-    return score, model
+    return abs(score), model

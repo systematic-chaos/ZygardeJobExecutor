@@ -6,10 +6,13 @@
         "domain": {
             "type": "string",
             "enum": [
-                "classification",
                 "regression",
+                "classification",
                 "clustering",
-                "deep-learning"
+                "deep-learning",
+                "binomial-classification",
+                "multinomial-classification",
+                "misc-functions"
             ]
         },
         "dataset": {
@@ -34,11 +37,21 @@
                         "type": "string",
                         "enum": [
                         	"linear-regression",
-                            "decision-tree",
-                            "svm",
-                            "k-means",
-                            "neural-network",
-                            "branin"
+                        	"generalized-linear-regression",
+                        	"random-forest-regression",
+                        	"decision-tree-regression",
+                        	"gradient-boosted-tree-regression",
+                        	"linear-support-vector-machine",
+                        	"binomial-logistic-regression",
+                        	"naive-bayes",
+                        	"random-forest-classification",
+                        	"multinomial-logistic-regression",
+                        	"decision-tree-classification",
+                        	"gradient-boosted-tree-classification",
+                        	"k-means",
+                        	"gaussian-mixture-model",
+                        	"multilayer-perceptron-classifier",
+                        	"branin"
                         ]
                     },
                     "hyperparameters": {

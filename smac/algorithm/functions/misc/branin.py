@@ -30,6 +30,6 @@ def branin_func(params={}, data=None):
             yValue = branin(x1, x2, params['a'], params['b'], params['c'], params['r'], params['s'], params['t'])
         else:
             yValue = branin(x1, x2)
-        return -yValue
+        return -abs(yValue)
     else:
         raise ValueError('x1 and x2 input variable arguments were no provided')

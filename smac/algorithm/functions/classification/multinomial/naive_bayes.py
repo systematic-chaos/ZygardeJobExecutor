@@ -54,4 +54,4 @@ def naive_bayes_func(spark, params={}, data=None):
     hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = naive_bayes(spark, data, hyperparams)
-    return score, model
+    return abs(score), model

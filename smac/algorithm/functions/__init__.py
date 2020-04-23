@@ -30,4 +30,3 @@ from .regression import gradient_boosted_tree_regression_func as gradient_booste
 
 from .clustering import k_means_func as k_means
 from .clustering import gaussian_mixture_model_func as gaussian_mixture_model
-from .clustering import latent_dirichlet_allocation_func as latent_dirichlet_allocation

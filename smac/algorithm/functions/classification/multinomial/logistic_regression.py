@@ -52,4 +52,4 @@ def logistic_regression_func(spark, params={}, data=None):
     hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = logistic_regression(spark, data, hyperparams)
-    return score, model
+    return abs(score), model

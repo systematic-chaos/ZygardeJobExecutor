@@ -1,5 +1,5 @@
 {
-	"domain": "classification",
+	"domain": "deep-learning",
 	"methods": [
 		{
 			"algorithm": "multilayer-perceptron-classifier",

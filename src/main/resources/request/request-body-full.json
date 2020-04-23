@@ -1,54 +1,59 @@
 {
-	"domain": "regression",
+	"domain": "classification",
 	"methods": [
 		{
-			"algorithm": "svm",
+			"algorithm": "linear-support-vector-machine",
 			"hyperparameters": [
 				{
-					"param": "convergence",
-					"values": [
-						"fast",
-						"slow"
-					]
+					"param": "maxIter",
+					"values": [ 100 ]
+				},
+				{
+					"param": "regParam",
+					"values": [ 0.0, 0.3 ]
 				}
 			]
 		},
 		{
-			"algorithm": "neural-network",
+			"algorithm": "multilayer-perceptron-classification",
 			"hyperparameters": [
 				{
-					"param": "numLayers",
-					"values": [
-						3,
-						4,
-						5,
-						6
-					]
+					"param": "numHiddenLayers",
+					"values": [ 3, 4, 5, 6 ]
 				},
 				{
 					"param": "inputLayerWidth",
-					"values": [
-						8
-					]
+					"values": [ 4, 8 ]
 				},
 				{
 					"param": "hiddenLayersWidth",
-					"values": [
-						32
-					]
+					"values": [ 5, 32 ]
 				},
 				{
 					"param": "outputLayerWidth",
-					"values": [
-						4, 6, 8
-					]
+					"values": [ 3, 4, 6, 8 ]
 				}
 			]
 		},
 		{
-			"algorithm": "decision-tree"
+			"algorithm": "decision-tree-classification",
+			"hyperparameters": [
+				{
+					"param": "maxDepth",
+					"values": [ 5 ]
+				},
+				{
+					"param": "maxCategories",
+					"values": [ 4 ]
+				}
+			]
 		}
 	],
+	"dataset": {
+		"path": "/home/thanatos/workspace/JobExecutor/smac/data/mllib/sample_libsvm_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "grid",
 	"computationalResources": {
 		"instances": [
 			{

@@ -1,5 +1,5 @@
 {
-	"domain": "regression",
+	"domain": "misc-functions",
 	"methods": [
 		{
 			"algorithm": "branin",
@@ -15,6 +15,7 @@
 			]
 		}
 	],
+	"parameterSearch": "random",
 	"computationalResources": {
 		"maxTotalInstances": 6
 	},

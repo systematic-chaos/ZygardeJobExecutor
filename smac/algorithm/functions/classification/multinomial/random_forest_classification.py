@@ -81,4 +81,4 @@ def random_forest_classification_func(spark, params={}, data=None):
     hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = random_forest_classification(spark, data, hyperparams)
-    return score, model
+    return abs(score), model

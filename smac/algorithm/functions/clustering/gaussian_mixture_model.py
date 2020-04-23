@@ -51,4 +51,4 @@ def gaussian_mixture_model_func(spark, params={}, data=None):
     hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = gaussian_mixture_model(spark, data, hyperparams)
-    return score, model
+    return abs(score), model

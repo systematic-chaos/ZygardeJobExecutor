@@ -69,4 +69,4 @@ def multilayer_perceptron_classifier_func(spark, params={}, data=None):
     hyperparams = hyperparameters_values(params, hyperparameters_default_values)
 
     (score, model) = multilayer_perceptron_classifier(spark, data, hyperparams)
-    return score, model
+    return abs(score), model

@@ -13,4 +13,3 @@ Polytechnic University of Valencia
 
 from .k_means import k_means_func
 from .gaussian_mixture_model import gaussian_mixture_model_func
-from .latent_dirichlet_allocation import latent_dirichlet_allocation_func

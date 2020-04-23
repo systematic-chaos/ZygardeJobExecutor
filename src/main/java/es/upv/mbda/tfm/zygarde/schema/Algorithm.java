@@ -17,12 +17,22 @@ import java.util.Map;
  */
 public enum Algorithm {
 	
-	DECISION_TREE("decision-tree"),
-	SVM("svm"),
+	LINEAR_REGRESSION("linear-regression"),
+	GLRM("generalized-linear-regression"),
+	RANDOM_FOREST_REGRESSION("random-forest-regression"),
+	DECISION_TREE_REGRESSION("decision-tree-regression"),
+	GBT_REGRESSION("gradient-boosted-tree-regression"),
+	LVSM("linear-support-vector-machine"),
+	BINOMIAL_LOGISTIC_REGRESSION("binomial-logistic-regression"),
+	NAIVE_BAYES("naive-bayes"),
+	RANDOM_FOREST_CLASSIFICATION("random-forest-classification"),
+	MULTINOMIAL_LOGISTIC_REGRESSION("multinomial-logistic-regression"),
+	DECISION_TREE_CLASSIFICATION("decision-tree-classification"),
+	GBT_CLASSIFICATION("gradient-boosted-tree-classification"),
 	K_MEANS("k-means"),
-	NEURAL_NETWORK("neural-network"),
-	BRANIN("branin"),
-	LINEAR_REGRESSION("linear-regression");
+	GMM("gaussian-mixture-model"),
+	MLPC("multilayer-perceptron-classifier"),
+	BRANIN("branin");
 	
 	public final String name;
 	private static Map<String, Algorithm> nameValues;
