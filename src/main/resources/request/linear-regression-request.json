@@ -6,15 +6,19 @@
 			"hyperparameters": [
 				{
 					"param": "maxIter",
-					"values": [ 10, 50, 100 ]
+					"values": [10, 50, 100]
 				},
 				{
 					"param": "regParam",
-					"values": [ 0.0, 0.3 ]
+					"values": [0.0, 0.3]
 				},
 				{
 					"param": "elasticNetParam",
-					"values": [ 0.0, 0.8 ]
+					"values": [0.0, 0.8]
+				},
+				{
+					"param": "solver",
+					"values": ["auto", "normal"]
 				}
 			]
 		}

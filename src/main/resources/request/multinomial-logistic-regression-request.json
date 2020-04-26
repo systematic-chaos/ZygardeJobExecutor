@@ -1,26 +1,26 @@
 {
-	"domain": "regression",
+	"domain": "classification",
 	"methods": [
 		{
-			"algorithm": "linear-regression",
+			"algorithm": "multinomial-logistic-regression",
 			"hyperparameters": [
 				{
 					"param": "maxIter",
-					"values": [ 10, 50, 100 ]
+					"values": [10, 100]
 				},
 				{
 					"param": "regParam",
-					"values": [ 0.0, 0.3 ]
+					"values": [0.0, 0.01, 0.3]
 				},
 				{
 					"param": "elasticNetParam",
-					"values": [ 0.0, 0.8 ]
+					"values": [0.0, 0.8]
 				}
 			]
 		}
 	],
 	"dataset": {
-		"path": "s3a://zygarde-data/mllib/sample_linear_regression_data.txt",
+		"path": "s3a://zygarde-data/mllib/sample_multiclass_classification_data.txt",
 		"format": "libsvm"
 	},
 	"parameterSearch": "random",

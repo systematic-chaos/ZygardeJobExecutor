@@ -2,25 +2,25 @@
 	"domain": "regression",
 	"methods": [
 		{
-			"algorithm": "linear-regression",
+			"algorithm": "random-forest-regression",
 			"hyperparameters": [
 				{
-					"param": "maxIter",
-					"values": [ 10, 50, 100 ]
+					"param": "numTrees",
+					"values": [2, 20]
 				},
 				{
-					"param": "regParam",
-					"values": [ 0.0, 0.3 ]
+					"param": "maxDepth",
+					"values": [2, 5]
 				},
 				{
-					"param": "elasticNetParam",
-					"values": [ 0.0, 0.8 ]
+					"param": "seed",
+					"values": [42]
 				}
 			]
 		}
 	],
 	"dataset": {
-		"path": "s3a://zygarde-data/mllib/sample_linear_regression_data.txt",
+		"path": "s3a://zygarde-data/mllib/sample_libsvm_data.txt",
 		"format": "libsvm"
 	},
 	"parameterSearch": "random",

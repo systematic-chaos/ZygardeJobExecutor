@@ -1,0 +1,24 @@
+{
+	"domain": "classification",
+	"methods": [
+		{
+			"algorithm": "decision-tree-classification",
+			"hyperparameters": [
+				{
+					"param": "maxDepth",
+					"values": [2, 5]
+				}
+			]
+		}
+	],
+	"dataset": {
+		"path": "s3a://zygarde-data/mllib/sample_libsvm_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
+	"computationalResources": {
+		"minTotalInstances": 1,
+		"maxTotalInstances": 1
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}

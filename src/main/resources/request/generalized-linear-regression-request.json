@@ -2,19 +2,23 @@
 	"domain": "regression",
 	"methods": [
 		{
-			"algorithm": "linear-regression",
+			"algorithm": "generalized-linear-regression",
 			"hyperparameters": [
 				{
 					"param": "maxIter",
-					"values": [ 10, 50, 100 ]
+					"values": [10, 25, 50, 100]
 				},
 				{
 					"param": "regParam",
-					"values": [ 0.0, 0.3 ]
+					"values": [0.0, 0.3]
 				},
 				{
-					"param": "elasticNetParam",
-					"values": [ 0.0, 0.8 ]
+					"param": "family",
+					"values": ["gaussian", "binomial", "poisson", "gamma"]
+				},
+				{
+					"param": "link",
+					"values": ["identity", "log", "inverse", "logit", "probit", "cloglog", "sqrt"]
 				}
 			]
 		}

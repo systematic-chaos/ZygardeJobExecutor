@@ -1,0 +1,44 @@
+{
+	"domain": "deep-learning",
+	"methods": [
+		{
+			"algorithm": "multilayer-perceptron-classifier",
+			"hyperparameters": [
+				{
+					"param": "inputLayerWidth",
+					"values": [2, 4]
+				},
+				{
+					"param": "outputLayerWidth",
+					"values": [2, 3]
+				},
+				{
+					"param": "hiddenLayersWidth",
+					"values": [2, 4, 5]
+				},
+				{
+					"param": "numHiddenLayers",
+					"values": [1, 2, 3]
+				},
+				{
+					"param": "maxIter",
+					"values": [100]
+				},
+				{
+					"param": "blockSize",
+					"values": [1, 128]
+				}
+			]
+		}
+	],
+	"dataset": {
+		"path": "s3a://zygarde-data/mllib/sample_multiclass_classification_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
+	"computationalResources": {
+		"minTotalInstances": 1,
+		"maxTotalInstances": 1
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}

@@ -17,10 +17,13 @@ import java.util.Map;
  */
 public enum Domain {
 	
-	CLASSIFICATION("classification"),
 	REGRESSION("regression"),
+	CLASSIFICATION("classification"),
 	CLUSTERING("clustering"),
-	DEEP_LEARNING("deep-learning");
+	DEEP_LEARNING("deep-learning"),
+	BINOMIAL_CLASSIFICATION("binomial-classification"),
+	MULTINOMIAL_CLASSIFICATION("multinomial-classification"),
+	MISC("misc-functions");
 	
 	public final String name;
 	private static Map<String, Domain> nameValues;

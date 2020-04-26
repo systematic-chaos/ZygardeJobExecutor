@@ -1,54 +1,45 @@
 {
-	"domain": "regression",
+	"domain": "classification",
 	"methods": [
 		{
-			"algorithm": "svm",
+			"algorithm": "linear-support-vector-machine",
 			"hyperparameters": [
 				{
-					"param": "convergence",
-					"values": [
-						"fast",
-						"slow"
-					]
+					"param": "regParam",
+					"values": [ 0.0, 0.3 ]
 				}
 			]
 		},
 		{
-			"algorithm": "neural-network",
+			"algorithm": "multilayer-perceptron-classifier",
 			"hyperparameters": [
 				{
-					"param": "numLayers",
-					"values": [
-						3,
-						4,
-						5,
-						6
-					]
+					"param": "numHiddenLayers",
+					"values": [ 3, 4, 5, 6 ]
 				},
 				{
 					"param": "inputLayerWidth",
-					"values": [
-						8
-					]
+					"values": [ 4, 8 ]
 				},
 				{
 					"param": "hiddenLayersWidth",
-					"values": [
-						32
-					]
+					"values": [ 5, 32 ]
 				},
 				{
 					"param": "outputLayerWidth",
-					"values": [
-						4
-					]
+					"values": [ 3, 4, 6, 8 ]
 				}
 			]
 		},
 		{
-			"algorithm": "decision-tree"
+			"algorithm": "decision-tree-classification"
 		}
 	],
+	"dataset": {
+		"path": "s3a://zygarde-data/mllib/sample_libsvm_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
 	"computationalResources": {
 		"instances": [
 			{
@@ -65,7 +56,7 @@
 			}
 		],
 		"minTotalInstances": 1,
-		"maxTotalInstances": 6
+		"maxTotalInstances": 1
 	},
 	"emailAddress": "thanatos.dreamslayer@gmail.com"
 }

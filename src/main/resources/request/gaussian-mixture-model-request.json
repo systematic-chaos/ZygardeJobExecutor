@@ -1,0 +1,32 @@
+{
+	"domain": "clustering",
+	"methods": [
+		{
+			"algorithm": "gaussian-mixture-model",
+			"hyperparameters": [
+				{
+					"param": "k",
+					"values": [2, 3]
+				},
+				{
+					"param": "tol",
+					"values": [0.0001, 0.001]
+				},
+				{
+					"param": "maxIter",
+					"values": [10, 100]
+				}
+			]
+		}
+	],
+	"dataset": {
+		"path": "s3a://zygarde-data/mllib/sample_kmeans_data.txt",
+		"format": "libsvm"
+	},
+	"parameterSearch": "random",
+	"computationalResources": {
+		"minTotalInstances": 1,
+		"maxTotalInstances": 1
+	},
+	"emailAddress": "thanatos.dreamslayer@gmail.com"
+}

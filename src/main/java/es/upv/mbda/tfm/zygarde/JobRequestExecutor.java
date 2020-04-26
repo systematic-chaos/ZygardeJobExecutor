@@ -124,11 +124,19 @@ public class JobRequestExecutor implements Runnable {
 	}
 	
 	private void transferDatasetToS3() throws IOException {
+		// The dataset is already available from AWS S3
 		if (request.getDataset() == null || request.getDataset().getPath().startsWith("s3")) {
 			return;
 		}
 		
 		String requestDatasetPath = request.getDataset().getPath();
+		
+		// Local filesystem dataset. Useful for local development and debugging.
+		File requestDatasetFile = new File(requestDatasetPath);
+		if (requestDatasetFile.exists() && requestDatasetFile.isFile()) {
+			return;
+		}
+		
 		File datasetDir = Paths.get("/tmp", request.getRequestId()).toFile();
 		File datasetFile = Paths.get(datasetDir.getPath(),
 				requestDatasetPath.substring(requestDatasetPath.lastIndexOf(File.separator) + 1)).toFile();
