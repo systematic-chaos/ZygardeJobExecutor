@@ -12,46 +12,104 @@ Polytechnic University of Valencia
 @contact:   fjfernandezbravo@iti.es
 '''
 
-from os import remove as remove_file
+import numpy as np
+
+from pyspark.sql import SparkSession
+from os import getenv, remove as remove_file
+from random import randint
 from shutil import rmtree as remove_dir
 from uuid import uuid4 as uuid
-from pyspark.sql import SparkSession
 
 from .s3_object_manager import upload_file
-from .functions.branin import branin_func as branin
-from .functions.linear_regression import linear_regression_func as linear_regression
+from .aux_functions import merge_dictionaries, cast_argument
 
-algorithm_modules = { 'branin': branin,
-                    'linear-regression': linear_regression }
+from .functions import branin
+from .functions import linear_regression
+from .functions import random_forest_regression
+from .functions import random_forest_regression
+from .functions import naive_bayes
+from .functions import linear_support_vector_machine as lsvm
+from .functions import k_means
+from .functions import gaussian_mixture_model as gmm
+from .functions import multilayer_perceptron_classifier as mlpc
+from .functions import random_forest_classification
+from .functions import generalized_linear_regression as glrm
+from .functions import binomial_logistic_regression
+from .functions import multinomial_logistic_regression
+from .functions import decision_tree_classification
+from .functions import decision_tree_regression
+from .functions import gradient_boosted_tree_classification as gbt_classification
+from .functions import gradient_boosted_tree_regression as gbt_regression
+
+misc_functions = { 'branin': branin }
+regression = { 'linear-regression': linear_regression,
+                'generalized-linear-regression': glrm,
+                'random-forest-regression': random_forest_regression,
+                'decision-tree-regression': decision_tree_regression,
+                'gradient-boosted-tree-regression': gbt_regression }
+binomial_classification = { 'linear-support-vector-machine': lsvm,
+                            'binomial-logistic-regression': binomial_logistic_regression }
+multinomial_classification = { 'naive-bayes': naive_bayes,
+                    'random-forest-classification': random_forest_classification,
+                    'multinomial-logistic-regression': multinomial_logistic_regression,
+                    'decision-tree-classification': decision_tree_classification,
+                    'gradient-boosted-tree-classification': gbt_classification }
+clustering = { 'k-means': k_means,
+                'gaussian-mixture-model': gmm }
+deep_learning = { 'multilayer-perceptron-classifier': mlpc }
+classification = merge_dictionaries([multinomial_classification, binomial_classification])
+
+algorithm_modules = merge_dictionaries([regression, classification, clustering, deep_learning, misc_functions])
+algorithm_platform = { 'standalone': [*misc_functions],
+                        'spark': [*merge_dictionaries([regression, classification, clustering, deep_learning])],
+                        'horovod': []} 
 
 def perform_training(runargs):
     app_name, algorithm, data_source, func_params = get_command_line_args(runargs)
     if algorithm not in algorithm_modules:
         raise ValueError("algorithm function %s does not exist" % algorithm)
 
-    #spark = get_spark_session(app_name)
-    #data = load_s3_dataset(spark, data_source) if data_source else None
-    spark = None; data = None    # REMOVE ME
-    score, model = algorithm_modules[algorithm](spark, func_params, data)
+    if algorithm in algorithm_platform['standalone']:
+        return perform_standalone_training(algorithm, func_params, data_source)
+    elif algorithm in algorithm_platform['spark']:
+        return perform_spark_training(algorithm, func_params, data_source, app_name)
+    elif algorithm in algorithm_platform['horovod']:
+        return float(0)
 
-    upload_model_s3(model, app_name, algorithm, score, func_params)
+def perform_standalone_training(algorithm, func_params, data_source=None):
+    score = algorithm_modules[algorithm](func_params, data_source)
+    return score
 
-    #spark.stop()
+def perform_spark_training(algorithm, func_params, data_source, app_name):
+    spark = get_spark_session(app_name)
+
+    try:
+        data = load_s3_dataset(spark, data_source) if data_source else None
+        (score, model) = algorithm_modules[algorithm](spark, func_params, data)
+        upload_model_s3(model, app_name, algorithm, score, func_params)
+    finally:
+        spark.stop()
+
     return score
 
 def get_spark_session(app_name):
-    spark = SparkSession.builder.master('local').appName(app_name).getOrCreate()
-    spark.sparkContext.setLogLevel('ERROR')
+    spark_master = getenv('SPARK_MASTER_HOST', 'localhost')
+    spark_session_id = "%s_%d" % (app_name, randint(0, 1048575))
+    spark = SparkSession.builder.master('spark://%s:7077' % spark_master)\
+                                .appName(spark_session_id).getOrCreate()
+    spark.sparkContext.setLogLevel('WARN')
     return spark
 
+# Load and parse the data file, converting it to a DataFrame
 def load_s3_dataset(spark, data_source, num_features=None):
-    df_reader = spark.read
     if 'format' in data_source:
-        df_reader = df_reader.format(data_source['format'])
-    if num_features:
-        dataset = df_reader.load(data_source['path'], numFeatures=num_features)
+        df_reader = spark.read.format(data_source['format'])
+        if num_features:
+            dataset = df_reader.load(data_source['path'], numFeatures=num_features)
+        else:
+            dataset = df_reader.load(data_source['path'])
     else:
-        dataset = df_reader.load(data_source['path'])
+        dataset = spark.textFile(data_source['path']).map(lambda line: np.array([float(x) for x in line.split(' ')]))
     return dataset
 
 def upload_model_s3(model, request_id, algorithm, precision, hyperparams):
@@ -121,25 +179,3 @@ def compose_model_path(request_id, precision, algorithm):
 
 def compose_temp_path(request_id, precision, algorithm):
     return "%s/%s-%.4f-%s" % ("/tmp", request_id, precision, algorithm)
-
-def cast_argument(value):
-    if is_int(value):
-        return int(value)
-    elif is_float(value):
-        return float(value)
-    else:
-        return str(value)
-
-def is_int(value):
-    try:
-        int(value)
-        return True
-    except ValueError:
-        return False
-
-def is_float(value):
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False
