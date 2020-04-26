@@ -15,7 +15,7 @@
 			]
 		},
 		{
-			"algorithm": "multilayer-perceptron-classification",
+			"algorithm": "multilayer-perceptron-classifier",
 			"hyperparameters": [
 				{
 					"param": "numHiddenLayers",
@@ -53,7 +53,7 @@
 		"path": "s3a://zygarde-data/mllib/sample_libsvm_data.txt",
 		"format": "libsvm"
 	},
-	"parameterSearch": "grid",
+	"parameterSearch": "random",
 	"computationalResources": {
 		"instances": [
 			{

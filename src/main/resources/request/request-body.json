@@ -11,7 +11,7 @@
 			]
 		},
 		{
-			"algorithm": "multilayer-perceptron-classification",
+			"algorithm": "multilayer-perceptron-classifier",
 			"hyperparameters": [
 				{
 					"param": "numHiddenLayers",
@@ -56,7 +56,7 @@
 			}
 		],
 		"minTotalInstances": 1,
-		"maxTotalInstances": 6
+		"maxTotalInstances": 1
 	},
 	"emailAddress": "thanatos.dreamslayer@gmail.com"
 }

@@ -17,7 +17,7 @@ Polytechnic University of Valencia
 
 import sys
 
-from algorithm.algorithm_local_wrapper import perform_training
+from algorithm.algorithm_wrapper import perform_training
 
 # Compute the target algorithm
 try:
