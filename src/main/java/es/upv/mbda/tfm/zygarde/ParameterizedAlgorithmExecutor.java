@@ -73,7 +73,7 @@ public class ParameterizedAlgorithmExecutor implements Callable<ModelResult> {
 		ProcessBuilder procBuilder = new ProcessBuilder();
 		procBuilder.directory(new File(System.getProperty("user.dir")));
 		procBuilder.command(composeCmdArgs());
-		LOGGER.debug(String.join(" ", composeCmdArgs()));
+		LOGGER.info(String.join(" ", composeCmdArgs()));
 		
 		BufferedReader procStdOutput = null;
 		BufferedReader procErrOutput = null;

@@ -152,7 +152,7 @@ public class SqsEntryPoint {
 		}
 		
 		private String composeModelPath(ModelResult taskResult) {
-			return composePath(taskResult).append('-').append("model").append(".xml").toString();
+			return composePath(taskResult).append('-').append("model").append(".json").toString();
 		}
 	}
 }
