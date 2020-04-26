@@ -124,8 +124,8 @@ def upload_model_s3(model, request_id, algorithm, precision, hyperparams):
 def save_upload_model(s3_bucket, model, request_id, algorithm, precision):
     tmp_model_path = compose_temp_path(request_id, precision, algorithm) + "-model"
 
-    model.write().format('pmml').save(tmp_model_path)
-    upload_file(tmp_model_path + "/part-00000", s3_bucket,
+    model.write().save(tmp_model_path)
+    upload_file(tmp_model_path + "/metadata/part-00000", s3_bucket,
         compose_model_path(request_id, precision, algorithm))
     remove_dir(tmp_model_path)
 
@@ -175,7 +175,7 @@ def compose_report_path(request_id, precision, algorithm):
     return "%s-%s.%s" % (compose_path(request_id, precision, algorithm), "report", "txt")
 
 def compose_model_path(request_id, precision, algorithm):
-    return "%s-%s.%s" % (compose_path(request_id, precision, algorithm), "model", "xml")
+    return "%s-%s.%s" % (compose_path(request_id, precision, algorithm), "model", "json")
 
 def compose_temp_path(request_id, precision, algorithm):
     return "%s/%s-%.4f-%s" % ("/tmp", request_id, precision, algorithm)

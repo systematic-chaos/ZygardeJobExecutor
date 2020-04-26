@@ -15,7 +15,7 @@
 			]
 		}
 	],
-	"parameterSearch": "random",
+	"parameterSearch": "grid",
 	"computationalResources": {
 		"maxTotalInstances": 6
 	},
