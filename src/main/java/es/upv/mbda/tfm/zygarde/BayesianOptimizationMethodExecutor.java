@@ -75,8 +75,8 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		int seed = new Random().nextInt(32768);
 		
 		Map<String, String> argsMap = new HashMap<>();
-		argsMap.put("scenario-file", getScenarioPath().toString());
-		argsMap.put("pcs-file", writeParamsFile(seed).toString());
+		argsMap.put("scenario-file", getScenarioPath());
+		argsMap.put("pcs-file", writeParamsFile(seed));
 		argsMap.put("numberOfRunsLimit", String.valueOf(getNumberOfRunsLimit()));
 		argsMap.put("rungroup", String.format("%s-%d", method.getAlgorithm(), seed));
 		argsMap.put("seed", String.valueOf(seed));
@@ -93,18 +93,18 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		return Arrays.copyOfRange(argsArray, 1, argsArray.length);
 	}
 	
-	private Path getScenarioPath() {
-		Path scenarioPath;
+	private String getScenarioPath() {
+		String scenarioPath;
 		try {
-			scenarioPath = Paths.get(getClass().getClassLoader().getResource("smac/scenario.txt").toURI());
+			scenarioPath = getClass().getClassLoader().getResource("smac/scenario.txt").toURI().getPath();
 		} catch (URISyntaxException urise) {
 			LOGGER.warn(urise.getMessage());
-			scenarioPath = Paths.get("smac", "scenario.txt");
+			scenarioPath = Paths.get("smac", "scenario.txt").toString();
 		}
 		return scenarioPath;
 	}
 	
-	private Path writeParamsFile(int seed) throws IOException {
+	private String writeParamsFile(int seed) throws IOException {
 		Path paramsPath = Paths.get(System.getProperty("user.dir"), "smac", "params",
 				String.format("params-%d.pcs", seed));
 		List<Hyperparameter<?>> hyperparameters = new ArrayList<>(method.getHyperparameters().size() + 4);
@@ -136,7 +136,7 @@ public class BayesianOptimizationMethodExecutor extends MethodExecutor {
 		}
 		
 		Files.write(paramsPath, paramLines, StandardCharsets.UTF_8);
-		return paramsPath;
+		return paramsPath.toString();
 	}
 	
 	private <V> Hyperparameter<V> getPropertyAsHyperparameter(String name, V value) {

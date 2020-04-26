@@ -28,7 +28,7 @@
 		}
 	],
 	"dataset": {
-		"path": "/home/thanatos/workspace/JobExecutor/smac/data/mllib/sample_kmeans_data.txt",
+		"path": "s3a://zygarde-data/mllib/sample_kmeans_data.txt",
 		"format": "libsvm"
 	},
 	"parameterSearch": "random",

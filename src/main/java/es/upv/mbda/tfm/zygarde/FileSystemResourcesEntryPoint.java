@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +46,8 @@ public class FileSystemResourcesEntryPoint {
 			String messageId = UUID.randomUUID().toString();
 			LOGGER.info(String.format("Request %s\tProcessing file %s", messageId, jsonRequestFile));
 			try {
-				String jsonRequest = new String(Files.readAllBytes(
-						Paths.get(FileSystemResourcesEntryPoint.class.getClassLoader()
-								.getResource(jsonRequestFile).toURI())),
-						StandardCharsets.UTF_8);
+				String jsonRequest = IOUtils.toString(FileSystemResourcesEntryPoint.class.getClassLoader()
+						.getResource(jsonRequestFile).toURI(), StandardCharsets.UTF_8.displayName());
 				if (requestParser.validateSchema(jsonRequest)) {
 					ZygardeRequest request = requestParser.readJson(jsonRequest);
 					request.setRequestId(messageId);
